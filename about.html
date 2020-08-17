@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	  <meta charset="UTF-8">
+    <title>VERSION 1 USER TEST</title>
+
+    <meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/dc.css"/>
+  <script src='https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.js'></script>
+  <script src="https://api.mapbox.com/mapbox-gl-js/v1.10.1/mapbox-gl.js"></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v1.10.1/mapbox-gl.css' rel='stylesheet' />
+  
+  <link href='https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.css' rel='stylesheet' />
+<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js"></script>
+<link
+rel="stylesheet"
+href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css"
+type="text/css"
+/>
+
+
+<link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@700&family=Coda+Caption:wght@800&family=Hammersmith+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/style_07142020.css"/>
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
+<!--
+  <script type="text/javascript" src="js/mapbox-gl.js"></script>
+-->
+
+    <style>
+     
+      .question {
+        background-color: #ffffff;
+        color:#000;
+        cursor: pointer;
+        width: 100%;
+        border: none;
+        text-align: left;
+        outline: none;
+        font-size:18px;
+        padding:10px;
+        line-height:125%;
+        font-weight:bold;
+      }
+
+      .active, .question:hover {
+        background-color: gold;
+      }
+
+      .answer{
+        padding: 0 18px;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+        background-color: #ffffff;
+        padding-left:20px;
+        font-size:16px;
+        padding-top:20px;
+      }
+      #about{
+          position:absolute;
+          top:80px;
+          width:400px;
+          padding-left:50px;
+          padding-top:100px;
+          font-size:18px;
+          line-height:150%;
+          margin-bottom:40px;
+      }
+      #FAQ{
+          position:absolute;
+          top:80px;
+          left:35%;
+          width:550px;
+          padding:80px;
+      }
+  
+      .indented{
+        margin-left:20px;
+       display:inline-block;
+      }
+      .names{
+        font-size:14px;
+        line-height:140%;
+        margin-left:20px;
+      }
+  
+    </style>
+
+</head>
+
+<body>
+ 
+<div id="head">
+  <span id="brand">MAPPING THE NEW POLITICS OF CARE</span><br>
+  <span id="title">Allocating Community Health Workers for COVID-19 in the Context of Scarcity and Social Vulnerability</span>  
+
+</div>
+  <div id="date">07/07/2020</div>
+
+<div id="mainMenu">
+  <a href="index.html">ALLOCATIONS</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="compare.html">COMPARISONS</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="caseStudies.html">CASE STUDIES</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <strong>ABOUT</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</div>
+<div id="about">
+  <p>  The SARSCoV2 epidemic in the United States is not just about a virus. It’s about decades of discrimination and neglect that set up the communities hardest hit by COVID-19 for acute vulnerability to this outbreak. As we try to combat this disease, we have to think more broadly about rebuilding health from the ground up in America, in a New Deal for Public Health with a Community Health Corps that does more than just calls you up to tell you you’ve been exposed to SARSCoV2.
+ </p><p>
+    This website is meant to help you articulate your priorities for addressing COVID-19 and the other health threats facing your state and see how resource limitations play out based on what matters to you. 
+</p><p>
+  We have a bias: COVID-19 matters but so does the social vulnerability of communities around the country--you’ll see this reflected in the choices we offer to you. 
+  </p><p>
+    This is the first in a series of projects by the Center for Spatial Research at Columbia University’s Graduate School of Architecture, Planning and Preservation and members of the Public Health Modeling Unit at the Yale School of Public Health to help guide policymakers and communities as they lay the groundwork for a New Politics of Care in the US.</p>
+    
+    <br><br>
+     Project Directors:<br><br>
+      <div class="names">
+      <strong>Gregg Gonsalves</strong>, Assistant Professor, Yale School of Public Health and Co-Director Yale Global Health Justice Partnership<br><br>
+      <strong>Laura Kurgan</strong>, Professor of Architecture, GSAPP and Director Center for Spatial Research(CSR), Columbia University.<br>
+      </div>
+      <br>
+      Project Team: <br><br>
+      <div class="names">
+      Map Development and Data Analysis: <br><br>
+      <strong>Dare Brawley</strong>, Assistant Director, Center for Spatial Research, Columbia University<br><br>
+      <strong>Jia Zhang</strong>, Mellon Associate Research Scholar, Columbia Center for Spatial Research<br><br>
+      <strong>Suzan Iloglu</strong>, Post-Doctoral Fellow, Yale School of Public Health<br><br>
+      <strong>Thomas Thornhill</strong>, Research Assistant, Yale School of Public Health<br><br>
+    </div>
+      <div class="names">
+     GSAPP-CSR, Graduate Research Assistants:<br>
+      <strong>Adeline Chum, Nelson De Jesus Ubri</strong>
+    </div><br>
+  
+</div>
+
+
+<div id="FAQ">
+  <div class="question">What can I learn from this project?</div>
+  <div class="answer">
+        <p>This project offers decision-makers at the state level multiple choices for allocating the scarce resources available for battling COVID-19 and providing other vital services during and after the COVID-19 pandemic. Most of the allocation choices incorporate prioritizing communities that were already vulnerable prior to the pandemic and are meant to show the value of including social vulnerability rather than only considering recent COVID-19 cases. </p>
+
+      <p>Over the past few months, states and localities have suffered a collapse in tax revenues due to the lockdowns associated with the pandemic and are trying to combat COVID-19 with limited resources. This scarcity of resources for the COVID-19 response has been compounded by the failure of the federal government to step in with a national response or to facilitate a massive infusion of federal dollars to the states.</p>
+
+      <p>Figuring out how to best manage l testing, contact tracing and isolation and other services communities require to build a better more healthy future for themselves in the context of so much need and so few resources is crucial for policymakers. </p>
+
+      <p>The website shows decision-makers options for how to assign a community health workforce by county. It allows users to select the number of community health workers (CHWs) they have available and to compare the impact of their resource limitations when paired with multiple ways of prioritizing need.</p>
+
+      <p>The uncertainty of the data made public by cities and states across the US is sadly a given for any decision-maker, and we present that data responsibly and with nuance. This map shows the consequences of each choice by presenting the data from multiple points of view, foregrounding its bias. </p>
+  </div>
+  
+  <div class="question">How can I use the map? </div>
+  <div class="answer"> 
+    <p><strong>MAKE TWO CHOICES</strong>  </p>
+  <p>1. How do you want to prioritize which counties receive the most community health workers?  </p>
+  <p> 2. How many community health workers will you have available in your state? </p>
+  <p> <strong>COLOR:</strong> The colors on the resulting map visualize two things simultaneously: (i) the priority level of each county for your selected prioritizing scheme, and (ii) how much of the need for community health workers is unmet at your chosen number of workers. 
+</p>
+  <p><strong>NUMBER</strong> of CHW’s: Community health workers are enumerated as CHWs per 100,000 people. We offer a series of choices in CHW/population ratios, choose the CHW/population ratio that is closest to your own local situation. You can also choose ratios that are higher or lower than your own to see how more or less resources change the allocation of CHWs based on the definition of need you chose previously, in the initial step.</p>
+  <p><strong>LEGEND:</strong> The map’s legend, a grid in the upper right corner, shows categories as priorities and can be used to select counties that fall within a certain priority level(Y Axis) or percent of unmet need(X Axis) by clicking on a row, column, or individual square in the grid.</p>
+  <p><strong>POP UP MENUS:</strong> Hovering over a given county will open a popup with additional information including: the number of community health workers allocated to it by the model, its population, the total number of community health workers it needs, the number of new COVID cases in the last 14 days, and a map of social vulnerability by census tract. 
+</p>
+  <p><strong>NO CASES:</strong> Some counties won’t have any cases of COVID-19 and those counties will show up as grey on the map, indicating the absence of need in these places. These are often national parks or sparsely populated areas in the US. However, other areas, which have need for CHWs will be shaded in the brightest colors, indicating that these counties are not covered by any CHWs, even though they are in need. </p>
+  </div>
+<div class="question">Why community health workers?</div>
+ <div class="answer">Our project uses the term ‘community health worker’ instead of contact tracers for a reason: exposure notification is only part of what needs to be done to combat the SARS-CoV2 pandemic. In addition, in some settings so many people are being infected that contact tracing will be hard to do. However, these hard-hit communities still need help. This project is meant to assist decision makers in targeting resources, whether for basic tasks in dealing with COVID-19 or the larger work we describe below.</p>
+
+<p>The scale-up of testing, contact tracing and isolation must be just one component in a broader effort to address overall  community health. This approach relies on a new politics of care in the US where we can “build a new movement that heals us and our body politic, and that will allow us—all of us—to survive a pandemic, and then, to thrive.”</p>
+</div>
+  <div class="question">How does this project allocate community health workers?</div>
+ <div class="answer"><p>First we estimate the total number of community health workers needed using the method developed by the Fitzhugh Mullan Institute for Health Workforce Equity at George Washington University. This model estimates the total number of workers needed by each county based on the number of new COVID cases in the past 14 days. 
+</p>
+
+<p>
+However most states do not currently have enough workers to meet these dynamically changing needs given the conditions of scarcity forced upon us by our current politics that leave us alone against the virus. With limited resources, choices have to be made about where to place community health workers. </p>
+
+<p>Our model uses five different prioritizing methods for assigning community health workers to counties within each state given these limited resources of the states. Each method has a particular bias, weighs different factors, and supports different policy priorities. They allow users to prioritize socially vulnerable populations or COVID19 specific parameters:</p>
+
+<ol>
+<li>Prioritize counties with socially vulnerable populations </li>
+<li>Prioritize counties with socially vulnerable populations and a high number of new cases in the last 14-days </li>
+<li>Prioritize counties with socially vulnerable populations, and a high number of new cases in the last 14-days as percent of population </li>
+<li>Prioritize counties with a high number of new cases in the last 14-days </li>
+<li>Prioritize counties with a high number of new cases  in the last 14-days as percent of population</li>
+</ol>
+<p>The model then takes the total number of community health workers available per state and assigns them to each county in the state based on the total estimated need and the selected priority above. </p>
+
+<p>The results show which counties should receive the greatest number of community health workers for a given priority. This reveals the trade-offs that occur when you focus on COVID19 specific factors alone, or integrate social vulnerability into your decision-making. </p>
+</div>
+
+
+
+
+  <div class="question">What is Social Vulnerability?</div>
+ <div class="answer">We use the <u><a href = "https://svi.cdc.gov/" target="blank">Centers for Disease Control’s</a></u> most recent Social Vulnerability Index (SVI) to highlight communities that are likely to be the most vulnerable to the impacts of COVID-19 and argue that these communities should receive resources first. 
+
+</p>
+
+<p>The SVI is calculated using multiple variables from the U.S. Census Bureau’s American Community Survey (ACS) “to spatially identify socially vulnerable populations, to help more completely understand the risk of hazards to these populations, and to aid in mitigating, preparing for, responding to, and recovering from that risk.” (Flannagan et al., 2011)  The SVI index is a relative percentile rank that ranges from 0 (lowest SVI in that region) to 1 (highest SVI in that region). Areas with a high SVI score (close to 1) are areas which often will be disproportionately impacted by disasters or other events because they have been structurally under-resourced. </p>
+<p>
+What is important to note about the SVI, is that it does more than describe risk at the individual level. We know that the SARSCoV2 pandemic has disproportionately affected communities of color, with African-Americans and Latinx people in the US infected and dying in greater numbers than their counterparts of European descent. The death rates among Asian-Americans in the US is also disproportionately high in a number of states across the US. SVI includes race/ethnicity, and also draws on fifteen variables from the ACS across four categories, which include social, economic and structural factors that can drive risk in communities: 
+</p>
+
+<strong>Socioeconomic Status</strong>
+<ul><li>Population below federal poverty level</li>
+<li>Unemployed population</li>
+<li>Income</li>
+<li>Population without a high school diploma</li>
+</ul>
+<strong>Household Composition and Disability</strong>
+<ul>
+<li>Population over 65</li>
+<li>Population under 17</li>
+<li>Population over 5 years old with a disability</li>
+<li>Single-parent households</li>
+</ul>
+<strong>Race/Ethnicity and Language</strong>
+<ul>
+<li>Population of color </li>
+<li>Population that speaks english “less than well” </li>
+</ul>
+<strong>Housing Type and Transportation</strong>
+<ul>
+<li>Number of housing structures with more than ten units </li>
+<li>Number of mobile homes</li>
+<li>Crowding (more people than rooms in home)</li>
+<li>Households without a vehicle</li>
+<li>Population living in group quarters</li>
+</ul>
+</div>
+
+  <div class="question">What are Community Health Workers?</div>
+ <div class="answer"><p>The response to COVID-19 needs more than testing and contact tracing. This is why our project advocates for community health workers who would do both epidemic control and more general health and social welfare provision.  </p>
+
+<p>What are CHWs? According to the National Institutes of Health:</p>
+<span class="indented">
+“Community health workers (CHWs) are lay members of the community who work either for pay or as volunteers in association with the local health care system in both urban and rural environments. CHWs usually share ethnicity, language, socioeconomic status, and life experiences with the community members they serve. They have been identified by many titles, such as community health advisors, lay health advocates, promotoras, outreach educators, community health representatives, peer health promoters, and peer health educators. CHWs offer interpretation and translation services, provide culturally appropriate health education and information, help people get the care they need, give informal counseling and guidance on health behaviors, advocate for individual and community health needs, and provide some direct services such as first aid and blood pressure screening.
+<br>
+<br>
+Since CHWs typically reside in the community they serve, they have the unique ability to bring information where it is needed most. They can reach community residents where they live, eat, play, work, and worship. CHWs are frontline agents of change, helping to reduce health disparities in underserved communities” 
+<br>
+<br>
+</span>
+
+<p>Of course, CHWs in the midst of a pandemic will be focused on epidemic control, but we define that more broadly to include health education for children, teenagers and adults for COVID and beyond; legal and “navigator” support to help secure benefit and stable housing for those at greatest health risk; community based participatory research to better understand what is needed locally to help build up the community’s health and resilience; and public workers who can help move us from carceral to public and community health approaches. Rather than call on police to enforce social distancing requirements, for example, we could call upon trained “ambassadors,” drawn from affected communities and charged with supporting people to take public health measures, rather than “enforcing” them. A Community Health Corps should also be explicitly a jobs and training program to assist those in unemployment now or who have been chronically underemployed by providing well-paying jobs, with benefits and other worker protections (e.g. right to organize) to address COVID-19, and serve as a platform for further education and career opportunities in healthcare and allied professions.   </p>
+</div>
+
+  <div class="question">What makes the allocation model here different from other models of health worker need that I have seen in the news and elsewhere?
+</div>
+ <div class="answer"> <p>Other models that examine the requirements for contact tracers around the United States, such as the one developed by the Fitzhugh Mullan Institute for Health Workforce Equity at George Washington University, articulate the ideal number of workers needed in each county. </p>
+
+<p>Our model however recognizes that most local and state officials are working in the context of severe resource constraints and may not be able to provide the needed number of workers at a  given time. Our model offers decisionmakers help by showing multiple methods to allocate a limited number of workers to each county. Because we want to show decisionmakers the implications of their choices, we allow users of this project to decide how to define their local priorities and see how county-by-county allocation of CHWs changes for each incremental addition of more CHWs.</p>
+
+<p>We rely on the GWU model in a key way though. We define the need for CHWs based on their description and formula for how many contact tracers are required, given the number of cases in a population. Thus the coverage model you see here should be thought of as a floor, not a ceiling. As decision-makers add new tasks beyond contact tracing to the roles of CHWs, the scale of the need and requirements to fulfill it locally will increase.</p>
+</div>
+
+  <div class="question">How can I learn more about the model and its inputs?
+</div>
+ <div class="answer"> <p>Our methodology is outlined in detail here. All of the source code used to produce the analysis for this project as well as the interactive interface is available via <a href ="https://github.com/CenterForSpatialResearch" target="blank">GitHub</a>.  </p>
+
+</div>
+
+  <div class="question">Can I make changes to this method, or share it with others?
+</div>
+ <div class="answer"><p>Yes you may share the project with others so long as you credit this work. The project should be credited as:
+ </p>
+
+<strong><p>“Mapping the New Politics of Care: Allocating Community Health Workers for COVID-19 iIn the Context of Scarcity and Social Vulnerability,” Yale Public Health Modeling Unit & Columbia Center for Spatial Research, Summer 2020. </p></strong>
+</div>
+  <div class="question">Where should I go to learn more about Community Health Workers and/or Contact Tracing efforts?</div>
+ <div class="answer">
+<p>For more information, please visit the following resources:</p>
+<ul>
+<li><a href="https://www.cdc.gov/coronavirus/2019-ncov/daily-life-coping/contact-tracing.html" target = "blank">Contact tracing: CDC’s COVID-19 Contact Tracing </a></li>
+<li><a href="https://svi.cdc.gov/" target = "blank">Social Vulnerability Index: CDC's Social Vulnerability Index (SVI)</a></li>
+</ul>
+</div>
+
+  <div class="question">Next steps?</div>
+ <div class="answer">
+<p>This project is an ongoing one. We have relied on publicly available data sources to build the model. As we can get more detailed information on COVID19 cases, particularly at the level of the census tract, we can refine resource allocation based on cases of disease down to that finer geographical unit. We are in discussions with health departments to procure census tract level and hope to have a prototype of census tract allocation by case count AND SVI shortly. We welcome the partnership of any health department in the US on this task, which would assist us in helping them allocate resources at the level of census tracts, should we have this information.</p>
+</div> 
+</div>
+<script>
+var coll = document.getElementsByClassName("question");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.maxHeight){
+      content.style.maxHeight = null;
+    } else {
+      content.style.maxHeight = content.scrollHeight + "px";
+    } 
+  });
+}
+</script>
+  
+</body>
+</html>
