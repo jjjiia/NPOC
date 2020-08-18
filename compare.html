@@ -20,7 +20,7 @@ href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapb
 type="text/css"
 />
 <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@700&family=Coda+Caption:wght@800&family=Hammersmith+One&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="css/style_07142020.css"/>
+    <link rel="stylesheet" type="text/css" href="css/20200817.css"/>
 
 <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
@@ -43,11 +43,11 @@ type="text/css"
 <body>
 <div id="head">
   <span id="brand">MAPPING THE NEW POLITICS OF CARE</span><br>
-  <span id="title">Allocating Community Health Workers for COVID-19 in the Context of Scarcity and Social Vulnerability
-
+  <!-- <span id="title">Allocating Community Health Workers for COVID-19 in the Context of Scarcity and Social Vulnerability</span> -->
 </div>
-  <div id="date"></div>
+  <!-- <div id="date"></div> -->
 
+     
 <div id="mainMenu">
   <a href="index.html">ALLOCATIONS</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <strong>COMPARISONS</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -57,7 +57,11 @@ type="text/css"
 <div id="byState"></div>
 <div id="nav">
   <!-- <nav id="update" class="menu"><i>Model Last Updated on ##/##/##</i></nav> -->
-   
+   <div id="placesMenu" >Go To:<br><br>
+     <select id="ddlCustomers"></select><br><br>
+       <!-- <div id="geocoder"></div>  -->
+      </div>
+      
   <div id = "strategies">
   <div id="strategiesQuestion" class="menu">How does each priority affect the % of needs met in each county? <br><br>
 Click a square below to compare between policies:
@@ -71,17 +75,14 @@ Click a square below to compare between policies:
 </nav>      
  <nav id="coverageMenu" class="menu"></nav>    
  </div>
-  <nav id="placesMenu" >Go To:<br><br>
-    <select id="ddlCustomers"></select><br><br>
-      <!-- <div id="geocoder"></div>  -->
-     </nav>
+
 
 </div>
 
  <div id="comparisonKey"></div>
    
     <div id="map"></div>
-  <div id="mapPopup"></div>
+  <div id="mapPopupCompare"></div>
 <div id = "gridHover"></div>
   
 
@@ -91,8 +92,6 @@ Click a square below to compare between policies:
 <script type="text/javascript" src="js/dc.js"></script>
 <script type="text/javascript" src="js/queue.v1.min.js"></script>
 <script type="text/javascript" src="js/radar.js"></script>
-<script type="text/javascript" src="dc-canvas-scatterplot.js"></script>
-<script type="text/javascript" src="fileSaver.js"></script>
 <script type="text/javascript" src="coverage_comparisons.js"></script>
 
 
