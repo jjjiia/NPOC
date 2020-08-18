@@ -25,7 +25,7 @@ var pub = {
     centroids:null,
     histo:null,
     states:null,
-    univar:true,
+    univar:false,
     SVIFIPS:null,
     sviZoom:10,
     SVIcenter:null,
@@ -198,15 +198,14 @@ function ready(counties,outline,centroids,modelData,timeStamp,states){
         //colorByWorkers(map)
     })
     
-   // "priority_high_demand"
     d3.select("#univar").on("click",function(){
         if(pub.univar==false){
-            d3.select("#univar").html("Show % need unmet")
+            d3.select("#univar").html("<strong>Show "+pub.column+"</strong> / Show Workers Assigned")
         colorByWorkers(map)
             pub.univar= true
         }
         else{
-            d3.select("#univar").html("Hide % need unmet")
+            d3.select("#univar").html("Show "+pub.column+" / <strong>Show Workers Assigned</strong>")
         colorByPriority(map)
             pub.univar= false
         }
@@ -304,7 +303,6 @@ function drawReservations(data,map){
 function drawMap(data,outline){
     d3.select("#map").style("width",window.innerWidth-250+"px")
           .style("height",window.innerHeight-120+"px")
-//	mapboxgl.accessToken = 'pk.eyJ1Ijoic2lkbCIsImEiOiJkOGM1ZDc0ZTc5NGY0ZGM4MmNkNWIyMmIzNDBkMmZkNiJ9.Qn36nbIqgMc4V0KEhb4iEw';    
     mapboxgl.accessToken = "pk.eyJ1IjoiYzRzci1nc2FwcCIsImEiOiJja2J0ajRtNzMwOHBnMnNvNnM3Ymw5MnJzIn0.fsTNczOFZG8Ik3EtO9LdNQ"//new account
     var maxBounds = [
     [-190,8], // Southwest coordinates
@@ -315,13 +313,7 @@ function drawMap(data,outline){
     ]
     map = new mapboxgl.Map({
          container: 'map',
-       // style:"mapbox://styles/c4sr-gsapp/ckcl1av4c083d1irpftb75l6j",//dare
-        //style:"mapbox://styles/c4sr-gsapp/ckcnnqpsa2rxx1hp4fhb1j357",//dare2
         style:"mapbox://styles/c4sr-gsapp/ckcnnqpsa2rxx1hp4fhb1j357",//newest
-       //style:"mapbox://styles/mapbox/satellite-v9",//mapbox default
-      //style: "mapbox://styles/sidl/ckctaoqfq1mwr1imlq4snjvgw",
- 		//style:"mapbox://styles/c4sr-gsapp/ckc4s079z0z5q1ioiybc8u6zp",//new account
-        //center:[-100,37],
         bounds:bounds,
         maxZoom:10,
          zoom: 3.8,
@@ -330,37 +322,15 @@ function drawMap(data,outline){
        maxBounds: maxBounds    
      });
      
-     //us-outline
-  
-
      map.on("load",function(){
-         // map.addControl(
-//          new mapboxgl.GeolocateControl({
-//          positionOptions: {
-//          enableHighAccuracy: true
-//          },
-//          trackUserLocation: true
-//          })
-//          );
+         
         $('#map').show();
 
         map.resize();
 
-    //
-    //     var geocoder = new MapboxGeocoder({
-    //     accessToken: mapboxgl.accessToken,
-    //     mapboxgl: mapboxgl
-    // });
-//document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
-
     map.addControl(new mapboxgl.NavigationControl(),'top-left');
     map.dragRotate.disable();
-         
-         
-       //  drawGrid(map,data) 
-         //map.setLayoutProperty("mapbox-satellite", 'visibility', 'none');
-         
-         map.addSource("counties",{
+    map.addSource("counties",{
              "type":"geojson",
              "data":data
          })
@@ -469,9 +439,9 @@ function drawMap(data,outline){
              if(x+200>w){
                  x = x-280
              }
-             if(y+500>h){
-                 y= h-520
-             }else if(y-500<150){
+             if(y+200>h){
+                 y= h-220
+             }else if(y-200<150){
                  y = 150
              }
              
@@ -506,24 +476,19 @@ function drawMap(data,outline){
              var currentGroup = feature.properties[currentSelection +"_group"]
              
              var currentGroupDescription = groupLabels[currentGroup]
-             var displayString = ""
-             if(currentSelectionCoverage==-1){
-             displayString = "<span class=\"popupTitle\">"+countyName+"</span><br>"
+             var displayString = "<span class=\"popupTitle\">"+countyName+"</span><br>"
                      +"Population: "+numberWithCommas(population)+"<br>"
-                     +"There are no cases for this county in this dataset currently."
-             }else{
-                 for(var m in measureSet){
-                displayString += measureSet[m]+": "+feature.properties[measureSet[m]]+"<br>"
-                     +"normalized: "+feature.properties["Normalized_"+measureSet[m]]+"<br><strong>"
-                     +groupLabels[feature.properties["group_"+measureSet[m]]]+"</strong><br>"+"<br>"
-                 }
-                 }
+                 +"<span style=\"color:red\"><strong>"+groupLabels[feature.properties["group_"+pub.column]]+"</strong></span><br>"
+                     +"<strong>"+pub.column+":</strong> "+feature.properties[pub.column]+"<br>"
+                     +"<strong>Normalized "+pub.column+":</strong> "+feature.properties["Normalized_"+pub.column]+"<br>"
+                     +"<br>"
+                 
              var needsMetString = currentSelectionCoverage+"% of needs met</strong>"
              
              if(currentSelectionCoverage ==-1){
                  needsMetString = "Currently No Cases Reported"
              }
-              d3.select("#popLabel").html(displayString+"<br><i>Click on county for more</i>")
+             d3.select("#popLabel").html(displayString)//+"<br><i>Click on county for more</i>")
             var coords = pub.centroids[feature.properties["FIPS"]]
               var formattedCoords =coords
          }       
@@ -847,11 +812,9 @@ function strategyMenu(map,data){
          var id = measureSet[i];
          if(measureSet[i]!= "percentage_scenario_SVI_pop"){
              d3.select("#strategiesMenu").append("div")//.attr("width",gridSize-4).attr("height",gridSize-4)
-             //.attr("x",20)
-           //  .attr("y",i*gridSize)
              .attr("id",id)
              .html(id)
-             .attr("class","measureGrid")
+             .attr("class","measures")
              .attr("fill",function(){
                  if(id =="percentage_scenario_SVI_hotspot"){
                      return "black"
@@ -861,7 +824,7 @@ function strategyMenu(map,data){
              })
              .attr("cursor","pointer")
              .attr("stroke","black")
-             //.attr("transform","translate("+gridSize*1.1+","+gridSize+")")
+             .style("cursor","pointer")
              .on("click",function(){
                          var filter = ["!=","percentage_scenario_SVI_hotspot_base_case_capacity_30",-1]
                          d3.selectAll(".measureGrid").attr("fill","white")
@@ -869,11 +832,10 @@ function strategyMenu(map,data){
                          map.setFilter("counties",filter)
                          clickedId = d3.select(this).attr("id")
                          pub.column = clickedId
-                         console.log(clickedId)
-                         d3.selectAll(".labelS").style("background-color","white").style("color","#000")
+                         d3.selectAll(".measures").style("background-color","white").style("color","#000")
             
-                         d3.selectAll("."+clickedId).style("color","#fff").style("background-color","#000")
-                         d3.selectAll("."+clickedId).style("background-color",highlightColor)
+                         d3.selectAll("#"+clickedId).style("color","#fff").style("background-color","#000")
+                         d3.selectAll("#"+clickedId).style("background-color",highlightColor)
           
                          if(pub.univar==true){
                              //drawGridWithoutCoverage(map)
@@ -888,38 +850,22 @@ function strategyMenu(map,data){
          }
        
      }
-     
-    // svg.append("text").text("New cases ").attr("x",gridSize*1.1).attr("y",10).attr("transform","translate(0,20)").attr('class',"measureGridLabel")
- //    svg.append("text").text("within the ").attr("x",gridSize*1.1).attr("y",25).attr("transform","translate(0,20)").attr('class',"measureGridLabel")
- //    svg.append("text").text("last 14 days").attr("x",gridSize*1.1).attr("y",40).attr("transform","translate(0,20)").attr('class',"measureGridLabel")
- //     
-    //svg.append("text").text("New cases").attr("x",gridSize+5).attr("y",10).attr("transform","translate("+gridSize+",20)").attr('class',"measureGridLabel")
-    // svg.append("text").text("As % of").attr("x",gridSize*1.1+5).attr("y",25).attr("transform","translate("+gridSize+",20)").attr('class',"measureGridLabel")
-   //  svg.append("text").text("population").attr("x",gridSize*1.1+5).attr("y",40).attr("transform","translate("+gridSize+",20)").attr('class',"measureGridLabel")
-   //
-    // svg.append("text").text("With").attr("x",gridSize*1.1-5).attr("y",gridSize-10).attr("transform","translate(0,"+gridSize/2+")").style("font-size","16px").attr("text-anchor","end")
-  //    .style("font-weight","bold")
-  //   svg.append("text").text("SVI").attr("x",gridSize*1.1-5).attr("y",gridSize+10).attr("transform","translate(0,"+gridSize/2+")").style("font-size","16px").attr("text-anchor","end")
-  //    .style("font-weight","bold")
-  //   svg.append("text").text("Without").attr("x",gridSize*1.1-5).attr("y",gridSize*2-10).attr("transform","translate(0,"+gridSize/2+")").style("font-size","16px").attr("text-anchor","end")
-  //   svg.append("text").text("SVI").attr("x",gridSize*1.1-5).attr("y",gridSize*2+10).attr("transform","translate(0,"+gridSize/2+")").style("font-size","16px").attr("text-anchor","end")
-  //    
      d3.selectAll(".measureGridLabel").style("font-size","12px")
 }
-function colorByPriority(map){
-    console.log("group_"+pub.column)
-    map.setPaintProperty("counties", 'fill-opacity',1)
-  
-var matchString = ["match",
-                ["get","group_"+pub.column],
+var newColors =  ["_10","#ddd",
                 "_0","rgba(19,182,163, 1)",
                 "_1","rgba(162,211,82, 1)",
                 "_2","rgba(255, 241, 0, 1)",
-                'red'
+                '#eee'
                 ]
+                
+function colorByPriority(map){
+    map.setPaintProperty("counties", 'fill-opacity',1)
+    var matchString = ["match",
+                ["get","group_"+pub.column]].concat(newColors)
     
     map.setPaintProperty("counties", 'fill-color', matchString)
-    drawGrid(map,pub.all)    
+    drawGridWithoutCoverage(map)    
     d3.select("#coverage").style("display","block")
     
 }
@@ -938,9 +884,9 @@ function colorByWorkers(map){
 }
 
 function drawGridWithoutCoverage(map){
-    var gridHeight = 250
-    var gridWidth = 220
-    var gridSize = 40
+    var gridHeight = 150
+    var gridWidth = 150
+    var gridSize = 30
     d3.select("#colorGrid svg").remove()
     var uniSVG = d3.select("#colorGrid").append("svg").attr("width",gridWidth).attr("height",gridHeight)
     var colorsArray =["rgba(19,182,163, 1)","rgba(162,211,82, 1)","rgba(255, 241, 0, 1)"]
@@ -960,7 +906,7 @@ function drawGridWithoutCoverage(map){
         percentage_scenario_SVI_hotspot:"SVI*(new cases/pop)"
     }
 
-    uniSVG.append("text").text(measureDisplayTextShort[pub.strategy].toUpperCase()).attr("x",10).attr("y",80).style("font-size","12px")
+    uniSVG.append("text").text(pub.column).attr("x",10).attr("y",80).style("font-size","12px")
     .attr("transform","rotate(-90 10,80)").style("font-weight","bold")
     .attr("text-anchor","middle")
     
@@ -968,9 +914,9 @@ function drawGridWithoutCoverage(map){
     .attr("transform","rotate(-90 25,80)").style("font-weight","bold")
     .attr("text-anchor","middle")
     
-    uniSVG.append("rect").attr("width",gridSize/2).attr("height",gridSize/2).attr("x",10).attr("y",190).attr("fill","#ddd")
-    uniSVG.append("text").attr("x",35).attr("y",204).text("Counties with no recorded cases")
-    
+    // uniSVG.append("rect").attr("width",gridSize/2).attr("height",gridSize/2).attr("x",10).attr("y",190).attr("fill","#ddd")
+   //  uniSVG.append("text").attr("x",35).attr("y",204).text("Counties with no recorded cases")
+   //  
     uniSVG.selectAll(".uniRect")
                 .data(colorsArray)
                 .enter()
@@ -978,13 +924,13 @@ function drawGridWithoutCoverage(map){
                 .attr("fill",function(d){return d})
                 .attr("width",gridSize)
                 .attr("height",gridSize)
-                .attr("x",0)
-                .attr("y",function(d,i){return 150 - (i+1)*gridSize})
+                .attr("x",20)
+                .attr("y",function(d,i){return 155 - (i+1)*(gridSize+10)})
                 .attr("transform","translate(100,-20)")
                 .attr("class","gridCell")
                 .on("mouseover",function(d,i){
                     var groupName = "_"+(i)            
-                    var filter = ["==",pub.strategy.replace("percentage_scenario_","")+"_group",groupName]
+                    var filter = ["==","group_"+pub.column,groupName]
                     map.setFilter("counties",filter)
                     d3.selectAll(".gridCell").attr("opacity",.3)
                     d3.select(this).attr("opacity",1)
@@ -1010,7 +956,7 @@ function drawGridWithoutCoverage(map){
                 })
                 .on("click",function(d,i){
                     var groupName = "_"+(i)            
-                    var filter = ["==",pub.strategy.replace("percentage_scenario_","")+"_group",groupName]
+                    var filter = ["==","group_"+pub.column,groupName]
 
                     if(JSON.stringify(filter) == JSON.stringify(currentFilter)){
                         d3.select(this).attr("stroke","none")
@@ -1034,8 +980,8 @@ function drawGridWithoutCoverage(map){
                     return label[i]
                 })
                 .attr("text-decoration","underline")
-                .attr("x",0)
-                .attr("y",function(d,i){return 135 - i*gridSize})
+                .attr("x",20)
+                .attr("y",function(d,i){return 135 - i*(gridSize+10)})
                 .attr("text-anchor","end")
                 .attr("transform","translate(95,-20)")
 }

@@ -20,7 +20,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@700&family=Raleway:wght@600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@700&family=Coda+Caption:wght@800&family=Hammersmith+One&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="css/geocoder.css"/>
-    <link rel="stylesheet" type="text/css" href="css/style_POST.css"/>
+    <link rel="stylesheet" type="text/css" href="css/20200817.css"/>
 
 <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
@@ -56,25 +56,23 @@
 </div>
 <div id="byState"></div>
 <div id="nav">
-  <!-- <nav id="update" class="menu"><i>Model Last Updated on ##/##/##</i></nav> -->
-   <!-- <nav id="currentState" class="menu">Currently Showing percent of unmet need by county when there are <strong>30</strong> contact tracers per 100,000 people in each state and <strong>Census Demographic Social Vulnerability and New Cases as % of Population</strong> are prioritized</nav> -->
-   
-  <div id = "strategies">
-       <nav id="strategiesQuestion" class="menu"> How do you want to ...?
-</nav>
-        <nav id="strategiesMenu" class="menu"></nav>
-      </nav>
- </div>     
+  <nav id="placesMenu" >Go To:<br><br>
+    <select id="ddlCustomers">
+    </select><br><br>
+  </nav>
 
-      <nav id="placesMenu" >Go To:<br><br>
-       <select id="ddlCustomers">
-       </select><br><br>
-        <!-- <div id="geocoder"></div> -->
-        </nav>
+  <div id = "strategies">
+    <nav id="strategiesQuestion" class="menu"> Methods of prioritizing Community Health Worker allocation:
+    </nav>
+    
+    <nav id="strategiesMenu" class="menu">
+    </nav>
+    </nav>
+  </div>     
 </div>
 
   <div id = "colorGrid">
-    <div id="univar">Show Workers Assigned/Show Priority Score</div>
+    <!-- <div id="univar">Show Workers Assigned/Show Priority Score</div> -->
     <div id="colorTitle">Click to Filter Map</div>
   </div>
 
