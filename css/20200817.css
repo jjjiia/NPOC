@@ -86,6 +86,13 @@ font-family: 'Hammersmith One', sans-serif;}
     z-index:9999;
     line-height:120%;
 }
+#currentSelection{
+    position:fixed;
+    left:300px;
+    bottom:50px;
+    z-index:999;
+    font-size:60px;
+}
 #colorGrid{
     width:150px;
     height:150px;

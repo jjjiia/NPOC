@@ -46,7 +46,14 @@ highDemand:["#A7DCDF","#6EAFC3","#3983A8","#02568B"]}
   "rgba(162,211,82, .4)","rgba(162,211,82, .7)","rgba(162,211,82, 1)",
   "rgba(255, 241, 0, .4)","rgba(255, 241, 0, .7)","rgba(255, 241, 0, 1)"
   ]
+  
 
+var newColors =  ["_10","#ddd",
+                "_0","rgba(19,182,163, 1)",
+                "_1","rgba(162,211,82, 1)",
+                "_2","rgba(255, 241, 0, 1)",
+                '#eee'
+                ]
     
 var pStops = [[0,.34],[.34,.67],[.67,1]]
 var cStops = [[0,34],[34,67],[67,100]]
@@ -261,7 +268,10 @@ function combineGeojson(all,counties){
             
             for(var k in keys){
                 var key = keys[k]
-                     var value = data[key]
+                 var value = data[key]
+                if(isNaN(value)==false){
+                    value = parseFloat(value)
+                }
                 counties.features[c].properties[key]=value
             }
         }
@@ -416,7 +426,7 @@ function drawMap(data,outline){
      map.on('mousemove', 'counties', function(e) {
          var feature = e.features[0]
         //console.log(map.getZoom())
-       //  console.log(feature["properties"])
+        console.log(feature["properties"]["Normalized_Covid_capita"])
          map.getCanvas().style.cursor = 'pointer'; 
          if(feature["properties"].FIPS!=undefined){
              if (hoveredStateId) {
@@ -852,20 +862,20 @@ function strategyMenu(map,data){
      }
      d3.selectAll(".measureGridLabel").style("font-size","12px")
 }
-var newColors =  ["_10","#ddd",
-                "_0","rgba(19,182,163, 1)",
-                "_1","rgba(162,211,82, 1)",
-                "_2","rgba(255, 241, 0, 1)",
-                '#eee'
-                ]
+
                 
 function colorByPriority(map){
     map.setPaintProperty("counties", 'fill-opacity',1)
-    var matchString = ["match",
-                ["get","group_"+pub.column]].concat(newColors)
+    // var matchString = ["match",
+ //                ["get","group_"+pub.column]].concat(newColors)
+    d3.select("#currentSelection").html("Normalized "+pub.column)
+    var matchString = {
+    property: "Normalized_"+pub.column,
+    stops: [[0, 'rgba(19,182,163, 1)'],[1, 'rgba(255, 241, 0, 1)']]
+    }
     
     map.setPaintProperty("counties", 'fill-color', matchString)
-    drawGridWithoutCoverage(map)    
+    drawGridWithoutCoverage(map)
     d3.select("#coverage").style("display","block")
     
 }
