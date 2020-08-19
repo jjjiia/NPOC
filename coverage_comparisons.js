@@ -28,7 +28,8 @@ var pub = {
     centroids:null,
     histo:null,
     pair:"SVIXXXCovid",
-    states:null
+    states:null,
+    countyHighlighted:null
 }
 var highlightColor = "#DF6D2A"
 var bghighlightColor = "gold"
@@ -418,11 +419,9 @@ var bounds = [[-130, 26],
           .style("height",window.innerHeight+"px")
  map = new mapboxgl.Map({
       container: 'map',
-    // style:"mapbox://styles/c4sr-gsapp/ckcl1av4c083d1irpftb75l6j",//dare
      style:"mapbox://styles/c4sr-gsapp/ckcnnqpsa2rxx1hp4fhb1j357",//dare2
-	//style: "mapbox://styles/sidl/ckbsbi96q3mta1hplaopbjt9s",
-	//style:"mapbox://styles/c4sr-gsapp/ckc4s079z0z5q1ioiybc8u6zp",//new account
-     //center:[-100,37],
+  //   style:"mapbox://styles/c4sr-gsapp/cke1jg963001c19mayxz2tayb",
+	
      bounds:bounds,
       zoom: 3.8,
       preserveDrawingBuffer: true,
@@ -478,31 +477,10 @@ var bounds = [[-130, 26],
          d3.select("#"+pub.pair).attr("fill","gold")
          drawKey(pub.pair)
          PopulateDropDownList(pub.states.features,map) 
-         
-         
-         //var color = {property:"priority_high_demand",stops:[[-1,0],[0,1]]}
-         
-         //map.setPaintProperty("counties","fill-opacity",{property:"percentage_scenario_hotspot_base_case_capacity_30",stops:[[-1,0],[0,1]]})
-         
-         var filter = ["!=","percentage_scenario_SVI_hotspot_base_case_capacity_"+currentCapacity,-1]
+        var filter = ["!=","percentage_scenario_SVI_hotspot_base_case_capacity_"+currentCapacity,-1]
          map.setFilter("counties",filter)
-         
-        //lineOpacity["property"]=pub.strategy+"_"+pub.coverage
-       // lineWeight["property"]=pub.strategy+"_"+pub.coverage
-        //fillColor["property"]=pub.pai
-     
          map.setPaintProperty("counties", 'fill-opacity',1)
-        // map.setPaintProperty("counties", 'fill-color',fillColor)
-              //var matchString = ["match",["get",pub.strategy+"_"+pub.coverage+"_group"]].concat(groupColorDict)
-              //console.log(matchString)
-              
-             //  map.setPaintProperty("counties", 'fill-color', matchString)  
-         
-        // d3.select("."+pub.coverage+"_radialC").style("background-color",highlightColor).style("border","1px solid "+ highlightColor)
- //        d3.selectAll("."+pub.coverage).style("color",highlightColor)
- //        d3.selectAll("."+pub.strategy).style("color",highlightColor)
- //        d3.selectAll("."+pub.strategy+"_radialS").style("background-color",highlightColor).style("border","1px solid "+ highlightColor)
- //   
+  
      })
 
     
@@ -513,58 +491,74 @@ var bounds = [[-130, 26],
       var hoveredStateId = null;
      
      var firstMove = true
-                  
+      
      map.on('mousemove', 'counties', function(e) {
          var feature = e.features[0]
          map.getCanvas().style.cursor = 'pointer'; 
          if(feature["properties"].FIPS!=undefined){
-             if (hoveredStateId) {
-             map.setFeatureState(
-             { source: 'counties', id: hoveredStateId },
-             { hover: false }
-             );
-             }
-             hoveredStateId = e.features[0].id;
-             map.setFeatureState(
-             { source: 'counties', id: hoveredStateId },
-             { hover: true }
-             );
+             
+                 if(pub.countyHighlighted==null){
+                     pub.countyHighlighted = feature["properties"]["County_FIPS"]
+                 }
+                 if(feature["properties"]["County_FIPS"] != pub.countyHighlighted){
+             
+                 if (hoveredStateId) {
+                 map.setFeatureState(
+                 { source: 'counties', id: hoveredStateId },
+                 { hover: false }
+                 );
+                 }
+                 hoveredStateId = e.features[0].id;
+                 map.setFeatureState(
+                 { source: 'counties', id: hoveredStateId },
+                 { hover: true }
+                 );
              
              
-             var x = event.clientX;     // Get the horizontal coordinate
-             var y = event.clientY;             
+                 var x = event.clientX;     // Get the horizontal coordinate
+                 var y = event.clientY;             
              
-             var x = event.clientX+20;     // Get the horizontal coordinate
-             var y = event.clientY+20;             
-             var w = window.innerWidth;
-             var h = window.innerHeight;
-             if(x+200>w){
-                 x = x-280
-             }
-             if(y+300>h){
-                 y= y-320
-             }
-              d3.select("#mapPopupCompare").style("visibility","visible")
-              .style("left",x+"px")
-              .style("top",(y+20)+"px") 
+                 var x = event.clientX+20;     // Get the horizontal coordinate
+                 var y = event.clientY+20;             
+                 var w = window.innerWidth;
+                 var h = window.innerHeight;
+                 if(x+200>w){
+                     x = x-280
+                 }
+                 if(y+300>h){
+                     y= y-320
+                 }
+                  d3.select("#mapPopupCompare").style("visibility","visible")
+                  .style("left",x+"px")
+                  .style("top",(y+20)+"px") 
              
-             var countyName = feature["properties"]["county"]+" County, "+feature["properties"]["stateAbbr"]
-             var population = feature["properties"]["totalPopulation"]
-             var geometry = feature["geometry"]
-             var countyId = feature["properties"]["FIPS"]
+                 var countyName = feature["properties"]["county"]+" County, "+feature["properties"]["stateAbbr"]
+                 var population = feature["properties"]["totalPopulation"]
+                 var geometry = feature["geometry"]
+                 var countyId = feature["properties"]["FIPS"]
+                 var key1 = "Proportional_allocation_to_"+pub.pair.split("XXX")[0]
+                 var value1 = feature["properties"][key1]
+                 var key2 = "Proportional_allocation_to_"+pub.pair.split("XXX")[1]
+                 var value2 = feature["properties"][key2]
              
-             var displayString = countyName+"<br>Population: "+population
+                 var displayString = "<strong>"+countyName
+                 +"</strong><br><strong>Population:</strong> "+population
+                 +"<br><br>Number of allocated workers for: <br><strong>"+key1.replace("Proportional_allocation_to_","")+": </strong>"+value1
+                 +"<br><strong>"+key2.replace("Proportional_allocation_to_","")+": </strong>"+value2
              
-             var chartData = []
-                         //
-              for(var p in measureSet){
-                  var pk = "Proportional_allocation_to_"+measureSet[p]
-                  var pv = feature["properties"][pk]
-                 // displayString+=pk+": "+pv+"<br>"
-                  chartData.push({axis:pk,value:pv})
+             
+                 var chartData = []
+                             //
+                  for(var p in measureSet){
+                      var pk = "Proportional_allocation_to_"+measureSet[p]
+                      var pv = feature["properties"][pk]
+                     // displayString+=pk+": "+pv+"<br>"
+                      chartData.push({axis:pk,value:pv})
+                  }
+              
+                 d3.select("#mapPopupCompare").html(displayString)
               }
-             d3.select("#mapPopupCompare").html(displayString)
-             drawChart(chartData)
+          //   drawChart(chartData)
          }       
          
          map.on("mouseleave",'counties',function(){
@@ -572,12 +566,12 @@ var bounds = [[-130, 26],
 
          })  
      
-         var coordinates = geometry.coordinates[0]
-         
-         var bounds = coordinates.reduce(function(bounds, coord) {
-                 return bounds.extend(coord);
-             }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
-      
+         // var coordinates = geometry.coordinates[0]
+//
+//          var bounds = coordinates.reduce(function(bounds, coord) {
+//                  return bounds.extend(coord);
+//              }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
+//
 
      });
     
@@ -786,6 +780,8 @@ function PopulateDropDownList(features,map) {
        if(this.value=="C48"){
         //   console.log("ok")
            zoomToBounds(map)
+          var filter = ["!=","stateAbbr"," "]
+          map.setFilter("counties",filter)
            // map.flyTo({
  //               zoom:3.8,
  //               center: [-94,37],
@@ -796,9 +792,9 @@ function PopulateDropDownList(features,map) {
        }else if(this.value=="02"){
            map.flyTo({
                zoom:4,
-               center: [-147.653,63.739],
-               speed: 0.8, // make the flying slow
-               curve: 1
+               center: [-147.653,63.739]//,
+               // speed: 0.8, // make the flying slow
+     //           curve: 1
                //essential: true // this animation is considered essential with respect to prefers-reduced-motion
            });
        }
@@ -806,10 +802,17 @@ function PopulateDropDownList(features,map) {
            var coords = boundsDict[this.value]
            //console.log(coords)
            var bounds =  new mapboxgl.LngLatBounds(coords);
-           map.fitBounds(bounds,{padding:50},{bearing:0})
+           map.fitBounds(bounds,{padding:60},{bearing:0})
+           var state_tiger_dict = {'01':'AL','02':'AK','04':'AZ','05':'AR','06':'CA','08':'CO','09':'CT','10':'DE','11':'DC','12':'FL','13':'GA','15':'HI','16':'ID','17':'IL','18':'IN','19':'IA','20':'KS','21':'KY','22':'LA','23':'ME','24':'MD','25':'MA','26':'MI','27':'MN','28':'MS','29':'MO','30':'MT','31':'NE','32':'NV','33':'NH','34':'NJ','35':'NM','36':'NY','37':'NC','38':'ND','39':'OH','40':'OK','41':'OR','42':'PA','44':'RI','45':'SC','46':'SD','47':'TN','48':'TX','49':'UT','50':'VT','51':'VA','53':'WA','54':'WV','55':'WI','56':'WY','60':'AS','66':'GU','69':'MP','72':'PR','78':'VI'}
+           console.log(this.value)
+           var currentState = state_tiger_dict[this.value]
+          var filter = ["==","stateAbbr",currentState]
+          map.setFilter("counties",filter)
+  //    
        }
     })
 }
+
 
 //#### Version
 //Determine the current version of dc with `dc.version`
