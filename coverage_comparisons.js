@@ -159,7 +159,8 @@ function ready(counties,centroids,modelData,timeStamp,states){
     var combinedGeojson = combineGeojson(dataByFIPS,counties)
     pub.all = combinedGeojson
     drawMap(combinedGeojson,comparisonsKeys)
-   
+  
+       
 };
 
 
@@ -429,7 +430,21 @@ var bounds = [[-130, 26],
     maxBounds: maxBounds    
   });
     
+    
+  d3.select("#backToNational")
+  .style("cursor","pointer")
+  .on("click",function(){
+      zoomToBounds(map)
+        var filter = ["!=","stateAbbr",""]
+         map.setFilter("counties",filter)
+      document.getElementById("ddlCustomers").value = "Contiguous 48"
+      document.getElementById("ddlCustomers").id = "Contiguous 48"
+      d3.select("#backToNational").style("visibility","hidden")
+  })
+    
      map.on("load",function(){        
+         
+         
          zoomToBounds(map)
          //map.setLayoutProperty("mapbox-satellite", 'visibility', 'none');
          map.addSource("counties",{
@@ -782,6 +797,7 @@ function PopulateDropDownList(features,map) {
            zoomToBounds(map)
           var filter = ["!=","stateAbbr"," "]
           map.setFilter("counties",filter)
+           d3.select("#backToNational").style("visibility","hidden")
            // map.flyTo({
  //               zoom:3.8,
  //               center: [-94,37],
@@ -790,6 +806,8 @@ function PopulateDropDownList(features,map) {
  //               //essential: true // this animation is considered essential with respect to prefers-reduced-motion
  //           });
        }else if(this.value=="02"){
+           d3.select("#backToNational").style("visibility","visible")
+           
            map.flyTo({
                zoom:4,
                center: [-147.653,63.739]//,
@@ -804,11 +822,12 @@ function PopulateDropDownList(features,map) {
            var bounds =  new mapboxgl.LngLatBounds(coords);
            map.fitBounds(bounds,{padding:60},{bearing:0})
            var state_tiger_dict = {'01':'AL','02':'AK','04':'AZ','05':'AR','06':'CA','08':'CO','09':'CT','10':'DE','11':'DC','12':'FL','13':'GA','15':'HI','16':'ID','17':'IL','18':'IN','19':'IA','20':'KS','21':'KY','22':'LA','23':'ME','24':'MD','25':'MA','26':'MI','27':'MN','28':'MS','29':'MO','30':'MT','31':'NE','32':'NV','33':'NH','34':'NJ','35':'NM','36':'NY','37':'NC','38':'ND','39':'OH','40':'OK','41':'OR','42':'PA','44':'RI','45':'SC','46':'SD','47':'TN','48':'TX','49':'UT','50':'VT','51':'VA','53':'WA','54':'WV','55':'WI','56':'WY','60':'AS','66':'GU','69':'MP','72':'PR','78':'VI'}
-           console.log(this.value)
+          // console.log(this.value)
            var currentState = state_tiger_dict[this.value]
           var filter = ["==","stateAbbr",currentState]
           map.setFilter("counties",filter)
-  //    
+              d3.select("#backToNational").style("visibility","visible")
+
        }
     })
 }
