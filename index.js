@@ -311,8 +311,8 @@ function drawReservations(data,map){
 }
 
 function drawMap(data,outline){
-    d3.select("#map").style("width",window.innerWidth-250+"px")
-          .style("height",window.innerHeight-120+"px")
+    d3.select("#map").style("width",window.innerWidth+"px")
+          .style("height",window.innerHeight+"px")
     mapboxgl.accessToken = "pk.eyJ1IjoiYzRzci1nc2FwcCIsImEiOiJja2J0ajRtNzMwOHBnMnNvNnM3Ymw5MnJzIn0.fsTNczOFZG8Ik3EtO9LdNQ"//new account
     var maxBounds = [
     [-190,8], // Southwest coordinates
@@ -426,7 +426,7 @@ function drawMap(data,outline){
      map.on('mousemove', 'counties', function(e) {
          var feature = e.features[0]
         //console.log(map.getZoom())
-        console.log(feature["properties"]["Normalized_Covid_capita"])
+        //console.log(feature["properties"]["Normalized_Covid_capita"])
          map.getCanvas().style.cursor = 'pointer'; 
          if(feature["properties"].FIPS!=undefined){
              if (hoveredStateId) {
@@ -1202,11 +1202,10 @@ function formatSelected(item) {
 
 function zoomToBounds(mapS){
     //https://docs.mapbox.com/mapbox-gl-js/example/zoomto-linestring/
-    var bounds =  new mapboxgl.LngLatBounds([-130, 26.829656], 
-        [-50, 49.500739]);
+    var bounds =  new mapboxgl.LngLatBounds([-155, 20], 
+        [-55, 55]);
     map.fitBounds(bounds,{padding:20},{bearing:0})
 }
-
 function getMaxMin(coords){
     var maxLat = -999
     var minLat = 0
@@ -1275,22 +1274,25 @@ function PopulateDropDownList(features,map) {
       }
     }
    $('select').on("change",function(){
-       console.log(this.value)
+      // console.log(this.value)
        if(this.value=="C48"){
-           console.log("ok")
-           map.flyTo({
-               zoom:3.8,
-               center: [-94,37],
-               speed: 0.8, // make the flying slow
-               curve: 1
-               //essential: true // this animation is considered essential with respect to prefers-reduced-motion
-           });
+        //   console.log("ok")
+           zoomToBounds(map)
+          var filter = ["!=","stateAbbr"," "]
+          map.setFilter("counties",filter)
+           // map.flyTo({
+ //               zoom:3.8,
+ //               center: [-94,37],
+ //               speed: 0.8, // make the flying slow
+ //               curve: 1
+ //               //essential: true // this animation is considered essential with respect to prefers-reduced-motion
+ //           });
        }else if(this.value=="02"){
            map.flyTo({
                zoom:4,
-               center: [-147.653,63.739],
-               speed: 0.8, // make the flying slow
-               curve: 1
+               center: [-147.653,63.739]//,
+               // speed: 0.8, // make the flying slow
+     //           curve: 1
                //essential: true // this animation is considered essential with respect to prefers-reduced-motion
            });
        }
@@ -1298,7 +1300,13 @@ function PopulateDropDownList(features,map) {
            var coords = boundsDict[this.value]
            //console.log(coords)
            var bounds =  new mapboxgl.LngLatBounds(coords);
-           map.fitBounds(bounds,{padding:20},{bearing:0})
+           map.fitBounds(bounds,{padding:60},{bearing:0})
+           var state_tiger_dict = {'01':'AL','02':'AK','04':'AZ','05':'AR','06':'CA','08':'CO','09':'CT','10':'DE','11':'DC','12':'FL','13':'GA','15':'HI','16':'ID','17':'IL','18':'IN','19':'IA','20':'KS','21':'KY','22':'LA','23':'ME','24':'MD','25':'MA','26':'MI','27':'MN','28':'MS','29':'MO','30':'MT','31':'NE','32':'NV','33':'NH','34':'NJ','35':'NM','36':'NY','37':'NC','38':'ND','39':'OH','40':'OK','41':'OR','42':'PA','44':'RI','45':'SC','46':'SD','47':'TN','48':'TX','49':'UT','50':'VT','51':'VA','53':'WA','54':'WV','55':'WI','56':'WY','60':'AS','66':'GU','69':'MP','72':'PR','78':'VI'}
+           console.log(this.value)
+           var currentState = state_tiger_dict[this.value]
+          var filter = ["==","stateAbbr",currentState]
+          map.setFilter("counties",filter)
+  //    
        }
     })
 }

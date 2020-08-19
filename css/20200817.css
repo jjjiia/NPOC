@@ -106,15 +106,11 @@ font-family: 'Hammersmith One', sans-serif;}
     font-size:60px;
 }
 #colorGrid{
-    width:150px;
+    width:250px;
     height:150px;
     padding:20px;
     background-color:rgba(255,255,255,1);
-     position:fixed;
-    right:5px;
-    top:130px;
-    border-radius:0px;
-    filter: drop-shadow(1px 1px 4px rgba(0,0,0,.3));
+    border-top: 1px solid black;
 }
 #comparisonKey{
     z-index:99999;
@@ -375,5 +371,6 @@ select{
  #strategiesMenu{
      background-color:#fff;
      z-index:99999;
+     padding-bottom:20px;
  }
  
