@@ -245,11 +245,11 @@ function combineGeojson(all,counties){
 
 function drawGrid(map,comparisonsSet){
     var drawn = []
-    var svg = d3.select("#comparisonGrid").append("svg").attr("width",400).attr("height",400)
+    var svg = d3.select("#comparisonGrid").append("svg").attr("width",290).attr("height",300)
     var gridSize = 15
     for(var i in measureSet){
             var x = i*gridSize+140
-            var y = 150
+            var y = 130
                 svg.append("text")
                 .text(measureSet[i])
                 .attr("x",x)
@@ -265,7 +265,7 @@ function drawGrid(map,comparisonsSet){
                 .style("font-size","12px")
                 .attr("x",i)
                 .attr("y",j*gridSize+gridSize/2)
-                .attr("transform","translate(125,155)")
+                .attr("transform","translate(125,135)")
                 .attr("text-anchor","end")
                 .attr("fill",keyColors[measureSet[j]])
             }
@@ -286,7 +286,7 @@ function drawGrid(map,comparisonsSet){
                         .attr("y",gridSize*i)
                         .attr("id",key.replace("compare_",""))
                         .attr("class","grid")
-                        .attr("transform","translate(130,155)")
+                        .attr("transform","translate(130,135)")
                         .attr("cursor","pointer")
                         .on("click",function(){
                             var id = d3.select(this).attr("id")
@@ -305,7 +305,7 @@ function drawGrid(map,comparisonsSet){
                         .attr("height",gridSize-6)
                         .attr("x",gridSize*j)
                         .attr("y",gridSize*i)
-                        .attr("transform","translate(130,155)")
+                        .attr("transform","translate(130,135)")
                         .attr("fill","none")
                         .attr("stroke","#ddd")
                     }
@@ -315,7 +315,7 @@ function drawGrid(map,comparisonsSet){
                         .attr("height",gridSize-6)
                         .attr("x",gridSize*j)
                         .attr("y",gridSize*i)
-                        .attr("transform","translate(130,155)")
+                        .attr("transform","translate(130,135)")
                         .attr("fill","none")
                         .attr("stroke","#ddd")
             }
@@ -323,8 +323,8 @@ function drawGrid(map,comparisonsSet){
     }
 }
 function drawKey(key){
-    console.log(key)
     d3.select("#comparisonKey svg").remove()
+    var width = 270
     // compare_percentage_scenario_
   //   high_demand
   //   _base_case_capacity_30_percentage_scenario_
@@ -334,7 +334,7 @@ function drawKey(key){
     var k2 = key.split("XXX")[1]//.replace("_base_case_capacity_"+currentCapacity,"")
    // console.log([k1,k2])
     var svg = d3.select("#comparisonKey").append("svg")
-        .attr("width",750).attr('height',120)
+        .attr("width",width).attr('height',120)
     var defs = svg.append("defs");
     var gradient = defs.append("linearGradient")
        .attr("id", "svgGradient")
@@ -351,12 +351,12 @@ function drawKey(key){
 
     gradient.append("stop")
        .attr('class', 'end')
-       .attr("offset", "30%")
+       .attr("offset", "40%")
        .attr("stop-color", "white")
        .attr("stop-opacity", 1);
     gradient.append("stop")
        .attr('class', 'end')
-       .attr("offset", "70%")
+       .attr("offset", "60%")
        .attr("stop-color", "white")
        .attr("stop-opacity", 1);
     gradient.append("stop")
@@ -365,18 +365,18 @@ function drawKey(key){
        .attr("stop-color", keyColors[k2])
        .attr("stop-opacity", 1);
        
-    svg.append("text").text("Higher % of needs met when prioritizing by".toUpperCase()).attr("y",18).attr("x",20)
+    svg.append("text").text("More workers by".toUpperCase()).attr("y",18).attr("x",20)
        .attr("fill","#000").style("font-size","12px").style("font-weight","bold").attr("fill",keyColors[k1])
        
-    svg.append("text").text("Higher % of needs met when prioritizing by".toUpperCase()).attr("y",18).attr("x",720)
+    svg.append("text").text("More workers by".toUpperCase()).attr("y",18).attr("x",width)
        .attr("fill","#000").style("font-size","12px").attr("text-anchor","end").style("font-weight","bold").attr("fill",keyColors[k2])
 
     svg.append("text").text(k1.toUpperCase()).attr("y",40).attr("x",20).style("font-size","12px").style("font-weight","bold").attr("fill",keyColors[k1])//.attr("fill",keyColors[k1])
-    svg.append("text").text(k2.toUpperCase()).attr("y",40).attr("x",720).style("font-size","12px").style("font-weight","bold").attr("text-anchor","end").attr("fill",keyColors[k2])//.attr("fill",keyColors[k2])
-    svg.append("text").text("no difference".toUpperCase()).attr("y",75).attr("x",370).attr("text-anchor","middle").style("font-size","12px").style("font-weight","bold")
+    svg.append("text").text(k2.toUpperCase()).attr("y",40).attr("x",width).style("font-size","12px").style("font-weight","bold").attr("text-anchor","end").attr("fill",keyColors[k2])//.attr("fill",keyColors[k2])
+    svg.append("text").text("no difference".toUpperCase()).attr("y",75).attr("x",width/2).attr("text-anchor","middle").style("font-size","12px").style("font-weight","bold")
     svg.append("rect")
     .attr("class","key")
-    .attr('width',700)
+    .attr('width',width)
     .attr('height',10)
     .attr("x",20)
     .attr("y",50)
@@ -414,8 +414,8 @@ var bounds = [[-130, 26],
      [-40, 50]
  ] 
  
- d3.select("#map").style("width",window.innerWidth-250+"px")
-          .style("height",window.innerHeight-120+"px")
+ d3.select("#map").style("width",window.innerWidth+"px")
+          .style("height",window.innerHeight+"px")
  map = new mapboxgl.Map({
       container: 'map',
     // style:"mapbox://styles/c4sr-gsapp/ckcl1av4c083d1irpftb75l6j",//dare
@@ -709,8 +709,8 @@ function coverageMenu(map){
 }
 function zoomToBounds(mapS){
     //https://docs.mapbox.com/mapbox-gl-js/example/zoomto-linestring/
-    var bounds =  new mapboxgl.LngLatBounds([-130, 26.829656], 
-        [-50, 49.500739]);
+    var bounds =  new mapboxgl.LngLatBounds([-155, 20], 
+        [-55, 55]);
     map.fitBounds(bounds,{padding:20},{bearing:0})
 }
 
@@ -785,13 +785,14 @@ function PopulateDropDownList(features,map) {
       // console.log(this.value)
        if(this.value=="C48"){
         //   console.log("ok")
-           map.flyTo({
-               zoom:3.8,
-               center: [-94,37],
-               speed: 0.8, // make the flying slow
-               curve: 1
-               //essential: true // this animation is considered essential with respect to prefers-reduced-motion
-           });
+           zoomToBounds(map)
+           // map.flyTo({
+ //               zoom:3.8,
+ //               center: [-94,37],
+ //               speed: 0.8, // make the flying slow
+ //               curve: 1
+ //               //essential: true // this animation is considered essential with respect to prefers-reduced-motion
+ //           });
        }else if(this.value=="02"){
            map.flyTo({
                zoom:4,
@@ -805,7 +806,7 @@ function PopulateDropDownList(features,map) {
            var coords = boundsDict[this.value]
            //console.log(coords)
            var bounds =  new mapboxgl.LngLatBounds(coords);
-           map.fitBounds(bounds,{padding:20},{bearing:0})
+           map.fitBounds(bounds,{padding:50},{bearing:0})
        }
     })
 }

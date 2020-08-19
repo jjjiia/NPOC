@@ -50,7 +50,7 @@ option{
     top:0px;
     background-color:rgba(255,255,255,1);
     border-bottom:1px solid #000000;
-    height:80px;
+    height:20px;
     width:100%;
     overflow:hidden;
     z-index:9;
@@ -118,13 +118,11 @@ font-family: 'Hammersmith One', sans-serif;}
 }
 #comparisonKey{
     z-index:99999;
-    position:fixed;
-    right:10px;
-    top:130px;
     background-color:rgba(255,255,255,1);
-    filter: drop-shadow(3px 3px 4px rgba(0,0,0,.1));
-    padding:15px;
-}
+    border-top:1px solid black;
+    padding-top:10px;
+/*    filter: drop-shadow(3px 3px 4px rgba(0,0,0,.1));
+*/}
 #univar{
     font-size:14px;
     cursor:pointer;
@@ -221,21 +219,21 @@ font-family: 'Hammersmith One', sans-serif;}
  #map{
 	 position:fixed;
 	 left:0px;
-     top:120px;
+     top:0px;
      width:100%;
      height:100%;
      z-index:-1;
-     margin-left:290px;
+     margin-left:0px;
+     margin-top:60px;
  }
  #nav{
      width:290px;
      position:absolute;
      left:0px;
-     top:120px;
-     margin-top:0px;
-     background:rgba(255,255,255,1);
-     border-right:1px solid black;
-     padding-bottom:200px;
+     top:60px;
+     margin:20px;
+     border:1px solid black;
+     background-color:rgba(255,255,255,1);
  }
  #nav2{
      position:fixed;
@@ -248,9 +246,10 @@ font-family: 'Hammersmith One', sans-serif;}
  #placesMenu{
      font-size:14px;
      padding:20px;
-     margin:10px;
-     width:190px;
+     margin:0px;
+     width:280;
      border-bottom:1px solid black;
+     
  }
  .placesLink{
      margin-top:10px;
@@ -302,7 +301,7 @@ select{
  #mainMenu{
      position:fixed;
      right:0px;
-     top:80px;
+     top:20px;
      padding:10px;
      font-size:14px;
      z-index:99;
