@@ -74,6 +74,11 @@ font-family: 'Hammersmith One', sans-serif;}
     font-size:16px;
     line-height:200%;
 }
+#fluctuation{
+    border-top:1px solid black;
+    padding:20px;
+    font-weight:bold;
+}
 #mapPopup{
     margin:0px;
     width:200px;
