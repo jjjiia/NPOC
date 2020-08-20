@@ -114,6 +114,7 @@ var timeStamp = d3.csv("https://raw.githubusercontent.com/CenterForSpatialResear
 var states = d3.json("simplestates.geojson")
 
  var measureSet = [
+     "medicaid_demand",
      "SVI",
    "Covid",
      "YPLL",

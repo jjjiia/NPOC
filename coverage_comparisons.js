@@ -59,6 +59,7 @@ var keyColors = {high_demand:"#EA00FF",SVI_hotspot:"#F45180",SVI_pop:"#45B6A3",h
 //var keyColors = {high_demand:"#717b44",SVI_hotspot:"#79db55",SVI_pop:"#c3d59a",hotspot:"#ccd149",SVI_high_demand:"#619f46"}
 
 var keyColors = {
+    medicaid_demand:"red",
     SVI:"#70ca7c",
 SVI_med:"#44caaf",
 Covid:"#6fac38",
@@ -72,6 +73,7 @@ Covid_capita_med:"#e8b72b"
 }
 
  var measureSet = [
+     "medicaid_demand",
      "SVI",
    "Covid",
      "YPLL",
