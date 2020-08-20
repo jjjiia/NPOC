@@ -427,7 +427,7 @@ function colorMap(map,key){
     var colorEnd = keyColors[measureEnd]
  //
     var dataProperty = "compare_"+key
-    var color = {property:dataProperty,stops:[[-100,colorStart],[0,"#fff"],[100,colorEnd]]}
+    var color = {property:dataProperty,stops:[[-1000,colorStart],[0,"#fff"],[1000,colorEnd]]}
     map.setPaintProperty("counties", 'fill-color', color)
     
 }
