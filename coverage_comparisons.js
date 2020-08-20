@@ -29,7 +29,9 @@ var pub = {
     histo:null,
     pair:"SVIXXXCovid",
     states:null,
-    countyHighlighted:null
+    countyHighlighted:null,
+    fluctuation:false,
+    overallMaxFluctuation:0
 }
 var highlightColor = "#DF6D2A"
 var bghighlightColor = "gold"
@@ -171,10 +173,12 @@ function numberWithCommas(x) {
 function turnToDictFIPS(data,keyColumn){
 //var prioritySet = ["priority_high_demand","priority_SVI_hotspot","priority_SVI_pop","priority_hotspot"]
     
-    var minCoverage = 10
-    var maxCoverage = 80
-    var coverageInterval = 10
+    var min= 9999
+    var max= 0    
+    var minKey = null
+    var maxKey = null
     
+    var overallMax = 0
 
     var newDict = {}
     var maxPriority = 0
@@ -191,6 +195,9 @@ function turnToDictFIPS(data,keyColumn){
             for(var j in measureSet){
                 var k1 = ("Proportional_allocation_to_"+measureSet[j])
                 var v1 = parseFloat(data[i][k1])
+                if(v1>max){max = v1; maxKey = k1}
+                if(v1<max){min = v1; minKey = k1}
+                
                 newDict[key][k1]=v1
                 for(var k in measureSet){
                     var k2 =("Proportional_allocation_to_"+measureSet[k])
@@ -216,7 +223,20 @@ function turnToDictFIPS(data,keyColumn){
                     }
             }
         }
+        if(max>overallMax){
+            overallMax = max
+            overallMaxId = data[i]
+        }
+        var range = max-min
+        newDict[key]["range"]=range
+        newDict[key]["max"]=max
+        newDict[key]["min"]=min
+        newDict[key]["maxKey"]=maxKey
+        newDict[key]["minKey"]=minKey
+        
     }
+    pub.overallMaxFluctuation = overallMax
+    console.log([overallMax,overallMaxId])
     var comparisonsSet = newKeys
     return [newDict,comparisonsSet]
 }
@@ -392,6 +412,10 @@ svg.append("text").attr("x",45).attr("y",103).text("Counties with no recorded ca
     
     
 }
+function colorMapByRange(map){
+    var color = {property:"range",stops:[[0,"#fff"],[pub.overallMaxFluctuation,"red"]]}
+    map.setPaintProperty("counties", 'fill-color', color)
+}
 function colorMap(map,key){
     //console.log(key)
    // console.log(currentCapacity)
@@ -408,43 +432,46 @@ function colorMap(map,key){
 function drawMap(data,comparisonsKeys){
 //	mapboxgl.accessToken = 'pk.eyJ1Ijoic2lkbCIsImEiOiJkOGM1ZDc0ZTc5NGY0ZGM4MmNkNWIyMmIzNDBkMmZkNiJ9.Qn36nbIqgMc4V0KEhb4iEw';    
     mapboxgl.accessToken = "pk.eyJ1IjoiYzRzci1nc2FwcCIsImEiOiJja2J0ajRtNzMwOHBnMnNvNnM3Ymw5MnJzIn0.fsTNczOFZG8Ik3EtO9LdNQ"//new account
- var maxBounds = [
- [-190,8], // Southwest coordinates
- [-20, 74] // Northeast coordinates
- ];
-var bounds = [[-130, 26], 
-     [-40, 50]
- ] 
+    var maxBounds = [
+        [-190,8], // Southwest coordinates
+        [-20, 74] // Northeast coordinates
+    ];
+    var bounds = [
+        [-130, 26], 
+        [-40, 50]
+    ] 
  
  d3.select("#map").style("width",window.innerWidth+"px")
           .style("height",window.innerHeight+"px")
- map = new mapboxgl.Map({
-      container: 'map',
-     style:"mapbox://styles/c4sr-gsapp/ckcnnqpsa2rxx1hp4fhb1j357",//dare2
-  //   style:"mapbox://styles/c4sr-gsapp/cke1jg963001c19mayxz2tayb",
-	
-     bounds:bounds,
-      zoom: 3.8,
-      preserveDrawingBuffer: true,
-     minZoom:3.5,
-    maxBounds: maxBounds    
-  });
+    map = new mapboxgl.Map({
+        container: 'map',
+        style:"mapbox://styles/c4sr-gsapp/ckcnnqpsa2rxx1hp4fhb1j357",//dare2
+        //   style:"mapbox://styles/c4sr-gsapp/cke1jg963001c19mayxz2tayb",//newest with cropping
+        bounds:bounds,
+        zoom: 3.8,
+        preserveDrawingBuffer: true,
+        minZoom:3.5,
+        maxBounds: maxBounds    
+    });
     
-    
-  d3.select("#backToNational")
-  .style("cursor","pointer")
-  .on("click",function(){
-      zoomToBounds(map)
+    d3.select("#backToNational")
+    .style("cursor","pointer")
+    .on("click",function(){
+        zoomToBounds(map)
         var filter = ["!=","stateAbbr",""]
-         map.setFilter("counties",filter)
-      document.getElementById("ddlCustomers").value = "Contiguous 48"
-      document.getElementById("ddlCustomers").id = "Contiguous 48"
-      d3.select("#backToNational").style("visibility","hidden")
-  })
+        map.setFilter("counties",filter)
+        document.getElementById("ddlCustomers").value = "Contiguous 48"
+        document.getElementById("ddlCustomers").id = "Contiguous 48"
+        d3.select("#backToNational").style("visibility","hidden")
+    })
     
-     map.on("load",function(){        
-         
-         
+    d3.select("#fluctuation")
+    .on("click",function(){
+        colorMapByRange(map)
+        fluctuation = true
+    })
+    
+     map.on("load",function(){                 
          zoomToBounds(map)
          //map.setLayoutProperty("mapbox-satellite", 'visibility', 'none');
          map.addSource("counties",{
