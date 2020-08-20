@@ -552,13 +552,40 @@ var bounds = [[-130, 26],
                  var geometry = feature["geometry"]
                  var countyId = feature["properties"]["FIPS"]
                  var key1 = "Proportional_allocation_to_"+pub.pair.split("XXX")[0]
-                 var value1 = feature["properties"][key1]
+                 var value1 = parseFloat(feature["properties"][key1])
                  var key2 = "Proportional_allocation_to_"+pub.pair.split("XXX")[1]
-                 var value2 = feature["properties"][key2]
+                 var value2 = parseFloat(feature["properties"][key2])
+                 var dif = Math.abs(value1-value2)
+                 
+                 var comparisonString = ""
+                 
+                 if(value1>value2){
+                     comparisonString = "Prioritizing by "
+                     +key1.replace("Proportional_allocation_to_","") 
+                     +" allocates "+dif+" more CHWs to this county than prioritizing by "
+                     +key2.replace("Proportional_allocation_to_","")
+                     
+                 }else if(value1<value2){
+                     comparisonString = "Prioritizing by "
+                     +key2.replace("Proportional_allocation_to_","") 
+                     +" allocates "+dif+" more CHWs to this county than prioritizing by "
+                     +key1.replace("Proportional_allocation_to_","")
+                     
+                 }else{
+                     comparisonString = "Prioritizing by "
+                     +key1.replace("Proportional_allocation_to_","")
+                     +" and "+key2.replace("Proportional_allocation_to_","")
+                      +" allocates the same amount of workers to this county."
+                 }
              
-                 var displayString = "<strong>"+countyName
-                 +"</strong><br><strong>Population:</strong> "+population
-                 +"<br><br>Number of allocated workers for: <br><strong>"+key1.replace("Proportional_allocation_to_","")+": </strong>"+value1
+                 var displayString = 
+                 "<span style = \"font-size:16px;\">"
+                 +"<strong>"+countyName
+                 +"</span>"
+                 +"</strong><br><strong>Population:</strong> "+population+"<br>"+"<br><strong>"
+                 +"<span style = \"font-size:14px; line-height:120%;\">"
+                 +comparisonString+"</span>"
+                 +"</strong><br><br>Number of allocated workers for: <br><strong>"+key1.replace("Proportional_allocation_to_","")+": </strong>"+value1
                  +"<br><strong>"+key2.replace("Proportional_allocation_to_","")+": </strong>"+value2
              
              
