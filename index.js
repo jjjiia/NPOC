@@ -121,13 +121,13 @@ var states = d3.json("simplestates.geojson")
    "Covid",
    "Covid_med",
      "Covid_death_capita",
-     "Covid_death_capita_med"
+     "Covid_death_capita_med",
      "YPLL",
      "YPLL_med",
      "Unemployment",
      "Unemployment_med",
      "Covid_capita",
-     "Covid_capita_med",
+     "Covid_capita_med"
 ]
 
 

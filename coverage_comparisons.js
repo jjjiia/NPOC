@@ -31,7 +31,8 @@ var pub = {
     states:null,
     countyHighlighted:null,
     fluctuation:false,
-    overallMaxFluctuation:0
+    overallMaxFluctuation:0,
+    showRangeOnly:false
 }
 var highlightColor = "#DF6D2A"
 var bghighlightColor = "gold"
@@ -73,19 +74,22 @@ Covid_capita_med:"#e8b72b"
 }
 
  var measureSet = [
-     "medicaid_demand",
+    // "medicaid_demand",
+     "Medicaid_capita",
      "SVI",
-   "Covid",
-     "YPLL",
-     "Unemployment",
-     "Covid_capita",
      "SVI_med",
+   "Covid",
    "Covid_med",
+     "Covid_death_capita",
+     "Covid_death_capita_med",
+     "YPLL",
      "YPLL_med",
+     "Unemployment",
      "Unemployment_med",
+     "Covid_capita",
      "Covid_capita_med"
 ]
- 
+
 function histo(){
 var histo = d3.histogram()
     .value(function(d){
@@ -197,8 +201,8 @@ function turnToDictFIPS(data,keyColumn){
             for(var j in measureSet){
                 var k1 = ("Proportional_allocation_to_"+measureSet[j])
                 var v1 = parseFloat(data[i][k1])
-                if(v1>max){max = v1; maxKey = k1}
-                if(v1<max){min = v1; minKey = k1}
+                if(v1>max){max = v1; maxKey = k1; console.log(maxKey)}
+                if(v1<min){min = v1; minKey = k1}
                 
                 newDict[key][k1]=v1
                 for(var k in measureSet){
@@ -235,7 +239,7 @@ function turnToDictFIPS(data,keyColumn){
         newDict[key]["min"]=min
         newDict[key]["maxKey"]=maxKey
         newDict[key]["minKey"]=minKey
-        
+        console.log( newDict[key]["maxKey"])
     }
     pub.overallMaxFluctuation = overallMax
     console.log([overallMax,overallMaxId])
@@ -417,6 +421,9 @@ svg.append("text").attr("x",45).attr("y",103).text("Counties with no recorded ca
 function colorMapByRange(map){
     var color = {property:"range",stops:[[0,"#fff"],[pub.overallMaxFluctuation,"red"]]}
     map.setPaintProperty("counties", 'fill-color', color)
+    pub.showRangeOnly=true
+    console.log(pub.showRangeOnly)
+    
 }
 function colorMap(map,key){
     //console.log(key)
@@ -588,44 +595,57 @@ function drawMap(data,comparisonsKeys){
                  
                  var comparisonString = ""
                  
-                 if(value1>value2){
-                     comparisonString = "Prioritizing by "
-                     +key1.replace("Proportional_allocation_to_","") 
-                     +" allocates "+dif+" more CHWs to this county than prioritizing by "
-                     +key2.replace("Proportional_allocation_to_","")
-                     
-                 }else if(value1<value2){
-                     comparisonString = "Prioritizing by "
-                     +key2.replace("Proportional_allocation_to_","") 
-                     +" allocates "+dif+" more CHWs to this county than prioritizing by "
-                     +key1.replace("Proportional_allocation_to_","")
-                     
-                 }else{
-                     comparisonString = "Prioritizing by "
-                     +key1.replace("Proportional_allocation_to_","")
-                     +" and "+key2.replace("Proportional_allocation_to_","")
-                      +" allocates the same amount of workers to this county."
+                 if(pub.showRangeOnly==true){
+                     var range = feature.properties["range"]
+                     console.log(range)
+                     var displayString = 
+                     "<span style = \"font-size:16px;\">"
+                     +"<strong>"+countyName
+                     +"</span>"
+                     console.log(feature.properties)
                  }
+                 
+                 else{
+                     if(value1>value2){
+                         comparisonString = "Prioritizing by "
+                         +key1.replace("Proportional_allocation_to_","") 
+                         +" allocates "+dif+" more CHWs to this county than prioritizing by "
+                         +key2.replace("Proportional_allocation_to_","")
+                     
+                     }else if(value1<value2){
+                         comparisonString = "Prioritizing by "
+                         +key2.replace("Proportional_allocation_to_","") 
+                         +" allocates "+dif+" more CHWs to this county than prioritizing by "
+                         +key1.replace("Proportional_allocation_to_","")
+                     
+                     }else{
+                         comparisonString = "Prioritizing by "
+                         +key1.replace("Proportional_allocation_to_","")
+                         +" and "+key2.replace("Proportional_allocation_to_","")
+                          +" allocates the same amount of workers to this county."
+                     }
              
-                 var displayString = 
-                 "<span style = \"font-size:16px;\">"
-                 +"<strong>"+countyName
-                 +"</span>"
-                 +"</strong><br><strong>Population:</strong> "+population+"<br>"+"<br><strong>"
-                 +"<span style = \"font-size:14px; line-height:120%;\">"
-                 +comparisonString+"</span>"
-                 +"</strong><br><br>Number of allocated workers for: <br><strong>"+key1.replace("Proportional_allocation_to_","")+": </strong>"+value1
-                 +"<br><strong>"+key2.replace("Proportional_allocation_to_","")+": </strong>"+value2
+                     var displayString = 
+                     "<span style = \"font-size:16px;\">"
+                     +"<strong>"+countyName
+                     +"</span>"
+                     +"</strong><br><strong>Population:</strong> "+population+"<br>"+"<br><strong>"
+                     +"<span style = \"font-size:14px; line-height:120%;\">"
+                     +comparisonString+"</span>"
+                     +"</strong><br><br>Number of allocated workers for: <br><strong>"+key1.replace("Proportional_allocation_to_","")+": </strong>"+value1
+                     +"<br><strong>"+key2.replace("Proportional_allocation_to_","")+": </strong>"+value2
              
              
-                 var chartData = []
-                             //
-                  for(var p in measureSet){
-                      var pk = "Proportional_allocation_to_"+measureSet[p]
-                      var pv = feature["properties"][pk]
-                     // displayString+=pk+": "+pv+"<br>"
-                      chartData.push({axis:pk,value:pv})
-                  }
+                     var chartData = []
+                                 //
+                      for(var p in measureSet){
+                          var pk = "Proportional_allocation_to_"+measureSet[p]
+                          var pv = feature["properties"][pk]
+                         // displayString+=pk+": "+pv+"<br>"
+                          chartData.push({axis:pk,value:pv})
+                      }
+                 }
+                 
               
                  d3.select("#mapPopupCompare").html(displayString)
               }
@@ -677,43 +697,10 @@ function drawChart(data){
         +"<br>  Prioritizing by <strong>"+maxKey+"</strong> would allocate <strong>"+max+" CHWs</strong>, the most number of workers to the county"
         +"<br> Prioritizing by <strong>"+minKey+"</strong> would allocate <strong>"+min+" CHWs</strong>, the least."
         +"<br> <strong>There is a "+range+" worker difference.</strong>")
-
+       
+       
+       
     
-        //
-    // var svg = d3.select("#mapPopupCompare").append("svg").attr("class","chart").attr("width",200).attr("height",250)
-    // svg.selectAll("rect")
-    // .data(data)
-    // .enter()
-    // .append("rect")
-    // .attr("width",function (d,i){
-    //     return 10
-    // })
-    // .attr("height",2)
-    // .attr("x",40)
-    // .attr("y",function(d,i){return xScale(d.value)})
-    // .attr("opacity",.4)
-    //
-    // svg.selectAll("text")
- //        .data(data)
- //        .enter()
- //        .append("text")
- //        .text(function (d,i){
- //            return d.axis.replace("Proportional_allocation_to_")
- //        })
- //        .attr("x",40)
- //        .attr("y",function(d,i){return xScale(d.value)})
-    
-    // svg.selectAll(".textValue")
-  //       .data(data)
-  //       .enter()
-  //       .append("text")
-  //       .text(function (d,i){
-  //           return Math.round(d.value)
-  //       })
-  //       .attr("x",35)
-  //       .style("font-size","14px")
-  //       .attr("y",function(d,i){return xScale(d.value)})
-  //       .attr("text-anchor","end")
 }
 function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
