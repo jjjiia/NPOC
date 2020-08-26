@@ -278,7 +278,7 @@ function combineGeojson(all,counties){
 function drawGrid(map,comparisonsSet){
     var drawn = []
     var svg = d3.select("#comparisonGrid").append("svg").attr("width",290).attr("height",300)
-    var gridSize = 15
+    var gridSize = 20
     for(var i in measureSet){
             var x = i*gridSize+140
             var y = 130
