@@ -31,7 +31,12 @@ var pub = {
     SVIcenter:null,
     column:"Proportional_allocation_to_Medicaid_capita",
     min:999,
-    max:0
+    max:0,
+    maxAllocationByPop:0,
+    minAllocationByPop:99999999999
+}
+var allocationMaxs = {
+    
 }
 var highlightColor = "#DF6D2A"
 var bghighlightColor = "gold"
@@ -245,6 +250,14 @@ function turnToDictFIPS(data,keyColumn){
             var priority = parseFloat(data[i][priorityKey])
             var allocated =Math.floor(parseFloat(data[i][measureKey]))
             
+            if(Object.keys(allocationMaxs).indexOf(measureKey)==-1){
+                allocationMaxs[measureKey]=allocated
+            }else{
+                if(allocated>allocationMaxs[measureKey]){
+                    allocationMaxs[measureKey]=allocated
+                }
+            }
+            
             if(allocated>pub.max){pub.max=allocated}
             if(allocated<pub.min && allocated!=0){pub.min=allocated}
             
@@ -262,7 +275,7 @@ function turnToDictFIPS(data,keyColumn){
         newDict[key]=values
         //break
     }
-    console.log([pub.max,pub.min])
+    //console.log(allocationMaxs)
     pub.max = pub.max
     return newDict
 }
@@ -272,6 +285,7 @@ function combineGeojson(all,counties){
         var data = all[countyFIPS]
        // console.log(data)
         counties.features[c]["id"]=countyFIPS
+        var population = counties.features[c].properties.totalPopulation
         //for now PR is undefined
         if(data!=undefined){            
             var keys = Object.keys(data)
@@ -283,6 +297,17 @@ function combineGeojson(all,counties){
                     value = parseFloat(value)
                 }
                 counties.features[c].properties[key]=value
+                // if(key.includes("Proportional_allocation")){
+ //                    var newKey = key+"_pop"
+ //                    var newValue = (value/population*100000)
+ //                    if(pub.maxAllocationByPop<newValue){
+ //                        pub.maxAllocationByPop=newValue
+ //                    }
+ //                    if(pub.minAllocationByPop>newValue && newValue!=0){
+ //                        pub.minAllocationByPop=newValue
+ //                    }
+ //                }
+ //                counties.features[c].properties[newKey]=newValue
             }
         }
     }
@@ -879,9 +904,8 @@ function colorByPriority(map){
  //                ["get","group_"+pub.column]].concat(newColors)
     var matchString = {
     property: pub.column,
-    stops: [[pub.min, '#17DCFF'],[pub.min+(pub.max-pub.min)/2,"#7E6EFF"],[pub.max, '#E400FF']]
+    stops: [[0, '#17DCFF'],[allocationMaxs[pub.column]/2,"#7E6EFF"],[allocationMaxs[pub.column], '#E400FF']]
     }
-    
     map.setPaintProperty("counties", 'fill-color', matchString)
     drawGridWithoutCoverage(map)
     d3.select("#coverage").style("display","block")
@@ -895,7 +919,7 @@ function drawGridWithoutCoverage(map){
     d3.select("#colorGrid svg").remove()
     var uniSVG = d3.select("#colorGrid").append("svg").attr("width",gridWidth).attr("height",gridHeight)
     var colorsArray =["#17DCFF","#7E6EFF","#E400FF"]
-    var label = [pub.min,pub.min+(pub.max-pub.min)/2,pub.max]
+    var label = [0,allocationMaxs[pub.column]/2,allocationMaxs[pub.column]]
     var clicked = false
     var currentFilter = null
     
