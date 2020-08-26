@@ -528,6 +528,8 @@ function drawMap(data,comparisonsKeys){
     
      map.on("load",function(){                 
          zoomToBounds(map)
+         map.addControl(new mapboxgl.NavigationControl(),'top-right');
+         
          //map.setLayoutProperty("mapbox-satellite", 'visibility', 'none');
          map.addSource("counties",{
              "type":"geojson",
