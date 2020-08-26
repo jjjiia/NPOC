@@ -319,9 +319,10 @@ select{
  .mapMenu{
      padding:5px;
      margin-left:-5px;
+     border-right:1px solid #000;
      border-left:1px solid #000;
      height:20px;
-     width:30%;
+     width:32%;
      color:#000;
      background-color:#fff;
      display:inline-block;

@@ -27,7 +27,7 @@ var pub = {
     all:null,
     centroids:null,
     histo:null,
-    pair:"SVIXXXCovid",
+    pair:"SVIXXXCovid_capita",
     states:null,
     countyHighlighted:null,
     fluctuation:false,
@@ -60,35 +60,44 @@ var keyColors = {high_demand:"#EA00FF",SVI_hotspot:"#F45180",SVI_pop:"#45B6A3",h
 //var keyColors = {high_demand:"#717b44",SVI_hotspot:"#79db55",SVI_pop:"#c3d59a",hotspot:"#ccd149",SVI_high_demand:"#619f46"}
 
 var keyColors = {
-    medicaid_demand:"red",
-    SVI:"#70ca7c",
-SVI_med:"#44caaf",
-Covid:"#6fac38",
-Covid_med:"#cb983f",
-YPLL:"#d6be3d",
+    SVI:"#6b68d6",
+    Covid_death_capita:"#5eb24c",
+    YPLL:"#b5a533",
+    Unemployment:"#d2762e",
+    Covid_capita:"#d5453e",
+    
+    Covid:"#6fac38",
+    Medicaid_capita:"red",
+    
     YPLL_med:"#569f3d",
-Unemployment:"#71d770",
-Unemployment_med:"#bec23f",
-Covid_capita:"#eb9519",
-Covid_capita_med:"#e8b72b"
+    Unemployment_med:"#bec23f",
+    Covid_med:"#cb983f",
+    Covid_capita_med:"#e8b72b"
 }
+
+
 
  var measureSet = [
     // "medicaid_demand",
-     "Medicaid_capita",
+     // "Medicaid_capita",
      "SVI",
-     "SVI_med",
-   "Covid",
-   "Covid_med",
-     "Covid_death_capita",
-     "Covid_death_capita_med",
      "YPLL",
-     "YPLL_med",
      "Unemployment",
-     "Unemployment_med",
+   // "Covid",
      "Covid_capita",
-     "Covid_capita_med"
+     "Covid_death_capita"
 ]
+
+var measureDisplayText = {
+     Proportional_allocation_to_Medicaid_capita:"MEDICAID",
+     Proportional_allocation_to_SVI:"SVI",
+     Proportional_allocation_to_YPLL:"YPLL",
+     Proportional_allocation_to_Unemployment:"UNEMPLOYMENT",
+     Proportional_allocation_to_Covid:"TOTAL COVID CASES",
+     Proportional_allocation_to_Covid_capita:"COVID CASES",
+     Proportional_allocation_to_Covid_death_capita:"COVID DEATHS"
+   
+}
 
 function histo(){
 var histo = d3.histogram()
@@ -130,13 +139,7 @@ for(var c = 1; c<=8; c++){
 //  "percentage_scenario_SVI_hotspot"
 //  ]
  
- var measureDisplayText = {
-     percentage_scenario_high_demand:"New cases",
-     percentage_scenario_SVI_high_demand:"SVI + new cases",
-     percentage_scenario_hotspot:"New cases per capita",
-     percentage_scenario_SVI_pop:"SVI",
-     percentage_scenario_SVI_hotspot:"SVI + new cases per capita"
- }
+
 Promise.all([counties,countyCentroids,allData,timeStamp,states])
 .then(function(data){
     ready(data[0],data[1],data[2],data[3],data[4])
@@ -179,10 +182,7 @@ function numberWithCommas(x) {
 function turnToDictFIPS(data,keyColumn){
 //var prioritySet = ["priority_high_demand","priority_SVI_hotspot","priority_SVI_pop","priority_hotspot"]
     
-    var min= 9999
-    var max= 0    
-    var minKey = null
-    var maxKey = null
+
     
     var overallMax = 0
 
@@ -195,19 +195,25 @@ function turnToDictFIPS(data,keyColumn){
         if(key.length==4){
             key= "0"+key
         }
+        var min= 9999
+        var max= 0    
+        var minKey = null
+        var maxKey = "test"
+        
         var newKeys = []
         newDict[key]=data[i]
             // var values = data[i]
             for(var j in measureSet){
                 var k1 = ("Proportional_allocation_to_"+measureSet[j])
-                var v1 = parseFloat(data[i][k1])
-                if(v1>max){max = v1; maxKey = k1; console.log(maxKey)}
-                if(v1<min){min = v1; minKey = k1}
+                var v1 = Math.floor(parseFloat(data[i][k1]))
+                
+                if(v1>max){max = v1; maxKey = k1;}
+                if(v1<min){min = v1; minKey = k1;}
                 
                 newDict[key][k1]=v1
                 for(var k in measureSet){
                     var k2 =("Proportional_allocation_to_"+measureSet[k])
-                    var v2 = parseFloat(data[i][k2])
+                    var v2 = Math.floor(parseFloat(data[i][k2]))
                     var index1 = j
                     var index2 = k
                     if(index1!=index2){
@@ -229,20 +235,18 @@ function turnToDictFIPS(data,keyColumn){
                     }
             }
         }
-        if(max>overallMax){
-            overallMax = max
-            overallMaxId = data[i]
-        }
+         if(max>overallMax){
+           overallMax = max
+          // overallMaxId = data[i]
+       }
         var range = max-min
         newDict[key]["range"]=range
         newDict[key]["max"]=max
         newDict[key]["min"]=min
         newDict[key]["maxKey"]=maxKey
         newDict[key]["minKey"]=minKey
-        console.log( newDict[key]["maxKey"])
     }
-    pub.overallMaxFluctuation = overallMax
-    console.log([overallMax,overallMaxId])
+     pub.overallMaxFluctuation = overallMax
     var comparisonsSet = newKeys
     return [newDict,comparisonsSet]
 }
@@ -259,10 +263,10 @@ function combineGeojson(all,counties){
             var keys = Object.keys(data)
             for(var k in keys){
                 var key = keys[k]
-                if(isNaN(parseFloat(value))!=true && key!="County_FIPS"){
-                     var value = parseFloat(data[key])
-                 }else{
+                if(isNaN(parseFloat(value))==true || key=="County_FIPS"|| key=="maxKey"){
                      var value = data[key]
+                 }else{
+                     var value = parseFloat(data[key])
                  }
                 counties.features[c].properties[key]=value
             }
@@ -279,7 +283,7 @@ function drawGrid(map,comparisonsSet){
             var x = i*gridSize+140
             var y = 130
                 svg.append("text")
-                .text(measureSet[i])
+                .text(measureDisplayText["Proportional_allocation_to_"+measureSet[i]])
                 .attr("x",x)
                 .attr("y",y)
                 .style("font-size","12px")
@@ -289,7 +293,7 @@ function drawGrid(map,comparisonsSet){
         for(var j in measureSet){
             if(i==0){
                 svg.append("text")
-                .text(measureSet[j])
+                .text(measureDisplayText["Proportional_allocation_to_"+measureSet[j]])
                 .style("font-size","12px")
                 .attr("x",i)
                 .attr("y",j*gridSize+gridSize/2)
@@ -317,6 +321,7 @@ function drawGrid(map,comparisonsSet){
                         .attr("transform","translate(130,135)")
                         .attr("cursor","pointer")
                         .on("click",function(){
+                            pub.showRangeOnly = false
                             var id = d3.select(this).attr("id")
                           //  var key = "compare_"+id.split("XXX")[0]+"_"+currentCapacity+"_"+id.split("XXX")[1]+"_"+currentCapacity
                             pub.pair = id
@@ -412,18 +417,59 @@ function drawKey(key){
        .attr("stroke","rgba(0,0,0,.5)")
        .attr("stroke-width",.1)
     
-    
-svg.append("rect").attr("width",20).attr("height",20).attr("x",20).attr("y",90).attr("fill","#ddd")
-svg.append("text").attr("x",45).attr("y",103).text("Counties with no recorded cases")
-    
+ //
+// svg.append("rect").attr("width",20).attr("height",20).attr("x",20).attr("y",90).attr("fill","#ddd")
+// svg.append("text").attr("x",45).attr("y",103).text("Counties with no recorded cases")
+//
     
 }
+function drawRangeKey(){
+    d3.select("#comparisonKey svg").remove()
+    var width = 270
+    
+    var svg = d3.select("#comparisonKey").append("svg")
+        .attr("width",width).attr('height',120)
+    var defs = svg.append("defs");
+    var gradient = defs.append("linearGradient")
+       .attr("id", "svgGradient")
+       .attr("x1", "0%")
+       .attr("x2", "100%")
+       .attr("y1", "0%")
+       .attr("y2", "0%");
+
+
+    gradient.append("stop")
+       .attr('class', 'end')
+       .attr("offset", "0%")
+       .attr("stop-color", "white")
+       .attr("stop-opacity", 1);
+       
+    gradient.append("stop")
+       .attr('class', 'end')
+       .attr("offset", "100%")
+       .attr("stop-color", "red")
+       .attr("stop-opacity", 1);
+       
+    svg.append("text").text("differences").attr("y",18).attr("x",20)
+       .attr("fill","#000").style("font-size","12px").style("font-weight","bold")//.attr("fill",keyColors[k1])
+       
+    svg.append("rect")
+    .attr("class","key")
+    .attr('width',width)
+    .attr('height',10)
+    .attr("x",20)
+    .attr("y",50)
+    .attr("fill","url(#svgGradient)")
+       .attr("stroke","rgba(0,0,0,.5)")
+       .attr("stroke-width",.1)
+    
+}
+
 function colorMapByRange(map){
     var color = {property:"range",stops:[[0,"#fff"],[pub.overallMaxFluctuation,"red"]]}
     map.setPaintProperty("counties", 'fill-color', color)
-    pub.showRangeOnly=true
-    console.log(pub.showRangeOnly)
-    
+    pub.showRangeOnly=true    
+    drawRangeKey()
 }
 function colorMap(map,key){
     //console.log(key)
@@ -588,21 +634,33 @@ function drawMap(data,comparisonsKeys){
                  var geometry = feature["geometry"]
                  var countyId = feature["properties"]["FIPS"]
                  var key1 = "Proportional_allocation_to_"+pub.pair.split("XXX")[0]
-                 var value1 = parseFloat(feature["properties"][key1])
+                 var value1 = Math.floor(parseFloat(feature["properties"][key1]))
                  var key2 = "Proportional_allocation_to_"+pub.pair.split("XXX")[1]
-                 var value2 = parseFloat(feature["properties"][key2])
+                 var value2 = Math.floor(parseFloat(feature["properties"][key2]))
                  var dif = Math.abs(value1-value2)
                  
                  var comparisonString = ""
                  
                  if(pub.showRangeOnly==true){
                      var range = feature.properties["range"]
-                     console.log(range)
                      var displayString = 
                      "<span style = \"font-size:16px;\">"
                      +"<strong>"+countyName
                      +"</span>"
-                     console.log(feature.properties)
+                     +"</strong><br><strong>Population:</strong> "+population+"<br>"+"<br><strong>"
+                     +"Allocating by "+ measureDisplayText[feature.properties.maxKey]+" results in the most workers: "+ feature.properties.max
+                     +"<br><br>Allocating by "+  measureDisplayText[feature.properties.minKey]+" results in the least workers: "+feature.properties.min
+                     +"<br><br>Difference: "+feature.properties.range
+                     
+                     var max = 0
+                     var min = 999
+                     for(var m in measureSet){
+                         var key = measureSet[m]
+                         var value = feature.properties[measureSet[m]]
+                         if(value>max){max=value}
+                         if(value<min){min = value}
+                     }
+                     
                  }
                  
                  else{
