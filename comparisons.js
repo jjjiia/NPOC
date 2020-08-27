@@ -27,6 +27,7 @@ var pub = {
     tract_svi:false,
     all:null,
     noGeo:null,
+    onlyGeo:null,
     centroids:null,
     histo:null,
     pair:"SVIXXXCovid_capita",
@@ -158,15 +159,16 @@ function ready(counties,centroids,modelData,timeStamp,states){
     var dataByFIPS = processed[0]
     pub.noGeo = dataByFIPS
     var combinedGeojson = combineGeojson(dataByFIPS,counties)
+    pub.onlyGeo = turnToDictFIPS(counties.features,"id")[0]
     pub.all = combinedGeojson
     drawMap(combinedGeojson,comparisonsKeys)
   
     ndx = crossfilter(modelData);
     var all = ndx.groupAll();  
-    scatterPlot(ndx,"Proportional_allocation_to_Covid_death_capita","Proportional_allocation_to_YPLL",1000)
+    scatterPlot(ndx,"Proportional_allocation_to_"+pub.pair.split("XXX")[0],"Proportional_allocation_to_"+pub.pair.split("XXX")[1],1000)
   
   
-   };
+};
 
 
 function numberWithCommas(x) {
@@ -183,7 +185,7 @@ function turnToDictFIPS(data,keyColumn){
     for(var i in data){
         var key = String(data[i][keyColumn])
         if(key.length==4){
-            key= "0"+key
+            key= String("0"+key)
         }
         var min= 9999
         var max= 0    
@@ -934,8 +936,8 @@ function scatterPlot(ndx,x,y,xRange){
         .dimension(dimension)
     .x(d3.scaleLinear().domain([-1, 5000]))
     .y(d3.scaleLinear().domain([-1, 5000]))
-    .xAxisLabel("ALLOCATION FOR "+measureDisplayText[x])
-    .yAxisLabel("ALLOCATION FOR "+measureDisplayText[y])
+    .xAxisLabel("ALLOCATION FOR "+measureDisplayText[x],20)
+    .yAxisLabel("ALLOCATION FOR "+measureDisplayText[y],20)
     .symbolSize(1)
     .excludedSize(1)
     .excludedOpacity(0.5)
@@ -945,7 +947,10 @@ function scatterPlot(ndx,x,y,xRange){
     })
     scatter.xAxis().ticks(4)
     scatter.yAxis().ticks(4)
+        
     dc.renderAll();
+    d3.select(".y-axis-label").attr("transform","translate(0,-20)")
+    
 }
 function onFiltered(data){
     var gids =[]
@@ -953,12 +958,17 @@ function onFiltered(data){
     for(var d in data){
         var gid = data[d].County_FIPS
         gids.push(gid)
-      //  var state = pub.all.features[gid].properties.stateAbbr
-        //var County = pub.all.features[gid].properties.county
+        if(gid.length==4){
+            gid = String("0"+gid)
+        }
+        
+        var state = pub.onlyGeo[gid].properties.stateAbbr
+        var county = pub.onlyGeo[gid].properties.county
         // console.log(gid)
       //   console.log(pub.all.features[gid])
       //   
-        counties+=gid+"<br>"
+       
+        counties+=gid+"  "+county+", "+state+"<br>"
     }
     
     d3.select("#scatterplotResults").html(gids.length+" counties<br>"+counties)
