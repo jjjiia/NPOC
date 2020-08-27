@@ -41,11 +41,6 @@ var allocationMaxs = {
 var highlightColor = "#DF6D2A"
 var bghighlightColor = "gold"
 var outlineColor = "#DF6D2A"
-var colors = {
-hotspot:["#A7DCDF","#6EAFC3","#3983A8","#02568B"],
-SVI:["#A7DCDF","#6EAFC3","#3983A8","#02568B"],
-hotspotSVI:["#A7DCDF","#6EAFC3","#3983A8","#02568B"],
-highDemand:["#A7DCDF","#6EAFC3","#3983A8","#02568B"]}
 
 
   var colorGroups =[

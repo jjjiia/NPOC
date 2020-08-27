@@ -249,12 +249,11 @@ font-family: 'Hammersmith One', sans-serif;}
      padding:10px;
  }
  #placesMenu{
-     font-size:14px;
-     padding:20px;
+     font-size:10px;
+     padding:10px;
      margin:0px;
      width:280;
      border-bottom:1px solid black;
-     
  }
  .placesLink{
      margin-top:10px;
@@ -265,16 +264,14 @@ font-family: 'Hammersmith One', sans-serif;}
      -webkit-appearance: none;
        -moz-appearance: none;
        appearance: none;
-     width:200px;
-     padding: 25px;
  }
 select{
      -webkit-appearance: none;
        -moz-appearance: none;
        appearance: none;
-       padding: 10px;
+       padding: 5px;
        font-family:'Open Sans', sans-serif;
-       font-size:14px;
+       font-size:10px;
        font-weight:200;
        width:200px;
  }
@@ -388,7 +385,10 @@ select{
  #mapbox-satellite{
      background-color:rgba(0,0,0,0);
  }
-
+ #allocationTitle{
+     font-weight:bold;
+     margin:10px;
+ }
  #strategiesQuestion{
      font-weight:bold;
      margin:10px;
