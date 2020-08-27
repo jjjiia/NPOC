@@ -4,7 +4,8 @@ function cartogram(data,stateAllocations){
     var formattedState = formatState(stateAllocations)[0]
     var max = formatState(stateAllocations)[1]
     var min = formatState(stateAllocations)[2]
-    console.log([max,min])
+    var total = formatState(stateAllocations)[3]
+    console.log([max,min,total])
   var width =300
   var height = 160
   var svg = d3.select("#cartogram").append("svg").attr("width",width).attr("height",height)
@@ -12,6 +13,7 @@ function cartogram(data,stateAllocations){
   var projection = d3.geoMercator().scale(220).translate([540, 260]);
 formatState(stateAllocations)
     var colorsArray =["#17DCFF","#7E6EFF","#E400FF"]
+  var tooltip = d3.select("#nav").append("div").attr("class", "toolTip");
   
   var cScale = d3.scaleLinear().domain([min,max]).range(["#17DCFF","#E400FF"])
     // Path generator
@@ -25,17 +27,36 @@ formatState(stateAllocations)
         .attr("fill",function(d){
             var state = d.properties["google_name"].replace(" (United States)","")
             var caps = state.toUpperCase()
-            console.log(caps)
-            console.log(formattedState[caps])
-            return cScale(formattedState[caps])
+            return cScale(formattedState[caps]);
             return "black"
         })
         .attr("d", path)
         .attr("stroke", "white")
+        .style("cursor","pointer")
         .on("click",function(d){
             var state = d.properties["iso3166_2"]
             cartoGoToState(state)
         })
+        .on("mouseover",function(d){
+            var state = d.properties["google_name"].replace(" (United States)","")
+            var caps = state.toUpperCase()
+           
+            var displayString = caps+"<br>"
+            +Math.floor(formattedState[caps])+" workers<br>"
+            +Math.round((formattedState[caps])/total*10000)/100+"%"+" of nationwide workers"
+            
+            tooltip
+            .style("position","absolute")
+            .style("padding","5px")
+            .style("border","1px solid black")
+            .style("background-color","rgba(255,255,255,.9)")
+              .style("left", d3.event.pageX - 50 + "px")
+              .style("top", d3.event.pageY - 70 + "px")
+              .style("visibility", "visible")
+              .html(displayString);
+        })
+		.on("mouseout", function(d){ tooltip.style("visibility", "hidden");});
+        
 
   // Add the labels
   svg.append("g")
@@ -51,25 +72,51 @@ formatState(stateAllocations)
         .style("font-size", 10)
         .style("font-family", "helvetica")
         .style("fill", "white")
+
+            .style("padding","5px")
+            .style("border","1px solid black")
+        .style("cursor","pointer")
         .on("click",function(d){
             var state = d.properties["iso3166_2"]
-            console.log(d.properties)
             cartoGoToState(state)
         })
+        .on("mouseover",function(d){
+            var state = d.properties["google_name"].replace(" (United States)","")
+            var caps = state.toUpperCase()
+            var displayString = caps+"<br>"
+            +Math.floor(formattedState[caps])+" workers<br>"
+            +Math.round((formattedState[caps])/total*10000)/100+"%"+" of nationwide workers"
+            
+            tooltip
+            .style("position","absolute")
+            .style("padding","5px")
+            .attr("border","1px solid black")
+            .style("background-color","rgba(255,255,255,.9)")
+              .style("left", d3.event.pageX - 50 + "px")
+              .style("top", d3.event.pageY - 70 + "px")
+              .style("visibility", "visible")
+              .html(displayString);
+        })
+		.on("mouseout", function(d){ tooltip.style("visibility", "hidden");});
+        
 }
 function formatState(stateAllocations){
    // console.log(stateAllocations)
     var max = 0
     var min = 999999999
+    var total = 0
     var formatted = {}
     for(var i in stateAllocations){
         var state = stateAllocations[i]["State"]
         var value = parseFloat(stateAllocations[i]["CHW_allocation"])
-        formatted[state]=value
+        formatted[state]= value
         if(value>max){max=value}
         if(value<min){min=value}
+        if(isNaN(value)==false){
+            total += value
+        }
     }
-    return [formatted,max,min]
+    return [formatted,max,min,total]
 }
 
 function cartoGoToState(state){   
@@ -77,8 +124,7 @@ function cartoGoToState(state){
    var stateToNumber = {'WA': '53', 'DE': '10', 'DC': '11', 'WI': '55', 'WV': '54', 'HI': '15', 'FL': '12', 'WY': '56', 'NH': '33', 'NJ': '34', 'NM': '35', 'TX': '48', 'LA': '22', 'NC': '37', 'ND': '38', 'NE': '31', 'TN': '47', 'NY': '36', 'PA': '42', 'CA': '06', 'NV': '32', 'VA': '51', 'GU': '66', 'CO': '08', 'VI': '78', 'AK': '02', 'AL': '01', 'AS': '60', 'AR': '05', 'VT': '50', 'IL': '17', 'GA': '13', 'IN': '18', 'IA': '19', 'OK': '40', 'AZ': '04', 'ID': '16', 'CT': '09', 'ME': '23', 'MD': '24', 'MA': '25', 'OH': '39', 'UT': '49', 'MO': '29', 'MN': '27', 'MI': '26', 'RI': '44', 'KS': '20', 'MT': '30', 'MP': '69', 'MS': '28', 'PR': '72', 'SC': '45', 'KY': '21', 'OR': '41', 'SD': '46'}// console.log(this.value)
    
        var coords = pub.bounds[stateToNumber[state]]
-   console.log(pub.bounds)
-   console.log(stateToNumber[state])
+ 
    //    //console.log(coords)
    if(stateToNumber[state]=="02"){
        map.flyTo({

@@ -26,6 +26,7 @@ var pub = {
     histo:null,
     states:null,
     univar:false,
+    bounds:null,
     SVIFIPS:null,
     sviZoom:10,
     SVIcenter:null,
@@ -115,6 +116,8 @@ var allData =d3.csv("County_level_proportional_allocation_for_all_policies.csv")
 var timeStamp = d3.csv("https://raw.githubusercontent.com/CenterForSpatialResearch/allocation_chw/master/Output/time_stamp.csv")
 var states = d3.json("simplestates.geojson")
 
+var carto= d3.json("cartogram.geojson")
+var stateAllocations = d3.csv("state_level_allocation.csv")
  var measureSet = [
      "Proportional_allocation_to_Medicaid_capita",
      "Proportional_allocation_to_SVI",
@@ -148,9 +151,9 @@ var measureDisplayTextPop={
      Proportional_allocation_to_Covid_death_capita:"Covid Deaths per 100,000 Residents"
 }
 
-Promise.all([counties,usOutline,countyCentroids,allData,timeStamp,states])
+Promise.all([counties,usOutline,countyCentroids,allData,timeStamp,states,carto,stateAllocations])
 .then(function(data){
-    ready(data[0],data[1],data[2],data[3],data[4],data[5])
+    ready(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7])
 })
 var hoveredStateId = null;
 
@@ -160,7 +163,7 @@ var lineWeight = {stops:[[-1,0],[-0.01,0],[0,2],[99,.5],[100,0]]}
 var centroids = null
 var latestDate = null
 
-function ready(counties,outline,centroids,modelData,timeStamp,states){
+function ready(counties,outline,centroids,modelData,timeStamp,states,carto,stateAllocations){
     d3.select("#closeMap").on("click",function(){
         d3.select("#SVIMap").style("display","none")
     })
@@ -202,6 +205,8 @@ function ready(counties,outline,centroids,modelData,timeStamp,states){
     //         });
     //
     //    
+    
+    cartogram(carto,stateAllocations)
         //drawHistogram(pub.strategy,pub.coverage)
     map.once("idle",function(){
         colorByPriority(map)
@@ -1281,6 +1286,7 @@ function PopulateDropDownList(features,map) {
           ddlCustomers.options.add(option);
       }
     }
+    pub.bounds = boundsDict
    $('select').on("change",function(){
       // console.log(this.value)
        if(this.value=="C48"){
