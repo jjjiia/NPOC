@@ -329,7 +329,11 @@ select{
      text-align:center;
  }
  #geocoder{width:30px;}
-
+ #comparisonPlot{
+     border-top:1px solid black;
+     width:100%;
+     z-index:9999999999;
+ }
  .coverageOption{
      padding:20px;
  }

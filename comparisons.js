@@ -4,6 +4,7 @@ $(document).ready(function() {
 
 //"F_THEME1","F_THEME2", "F_THEME3", "F_THEME4"
 var map;
+var ndx;
 var detailMap;
 var themesDefinitions ={
     "SPL_THEME1":"Sum of series for Socioeconomic",
@@ -48,16 +49,9 @@ var maxCoverage = 80
 var coverageInterval = 10
 
 var colorEnd = "#6FAFC4"
-var colorStart = "#E27C3B"
-//var colorStart = "#FBD33C"
 var colorStart = "#604F23"
-
-//"priority_high_demand","priority_SVI_hotspot","priority_SVI_pop","priority_hotspot"
-
 var keyColors = {high_demand:"#EA00FF",SVI_hotspot:"#F45180",SVI_pop:"#45B6A3",hotspot:"#7E6EFF",SVI_high_demand:"#71BF4D"}
-//var keyColors = {high_demand:"#fccc0a",SVI_hotspot:"#996633",SVI_pop:"#0039a6",hotspot:"#00933c",SVI_high_demand:"#b933ad"}
-//var keyColors ={high_demand:"#437337",SVI_hotspot:"#c8b046",SVI_pop:"#63bb91",hotspot:"#837632",SVI_high_demand:"#6dbf45"}
-//var keyColors = {high_demand:"#717b44",SVI_hotspot:"#79db55",SVI_pop:"#c3d59a",hotspot:"#ccd149",SVI_high_demand:"#619f46"}
+
 
 var keyColors = {
     SVI:"#6b68d6",
@@ -134,12 +128,6 @@ for(var c = 1; c<=8; c++){
     coverageDisplayText[setTerm] = c*10+' CHW per 100,000 residents'
  }
 
-// //var measureSet = ["percentage_scenario_SVI_pop","percentage_scenario_SVI_hotspot","percentage_scenario_hotspot","percentage_scenario_high_demand"]
-//  var measureSet = ["percentage_scenario_SVI_pop","percentage_scenario_high_demand","percentage_scenario_SVI_high_demand","percentage_scenario_hotspot",
-//  "percentage_scenario_SVI_hotspot"
-//  ]
- 
-
 Promise.all([counties,countyCentroids,allData,timeStamp,states])
 .then(function(data){
     ready(data[0],data[1],data[2],data[3],data[4])
@@ -171,8 +159,12 @@ function ready(counties,centroids,modelData,timeStamp,states){
     pub.all = combinedGeojson
     drawMap(combinedGeojson,comparisonsKeys)
   
-       
-};
+    ndx = crossfilter(modelData);
+    var all = ndx.groupAll();  
+    scatterPlot(ndx,"Proportional_allocation_to_Covid_death_capita","Proportional_allocation_to_YPLL",1000)
+  
+  
+   };
 
 
 function numberWithCommas(x) {
@@ -180,10 +172,6 @@ function numberWithCommas(x) {
 }
 //var comparisonsSet = []
 function turnToDictFIPS(data,keyColumn){
-//var prioritySet = ["priority_high_demand","priority_SVI_hotspot","priority_SVI_pop","priority_hotspot"]
-    
-
-    
     var overallMax = 0
 
     var newDict = {}
@@ -247,7 +235,7 @@ function turnToDictFIPS(data,keyColumn){
         newDict[key]["minKey"]=minKey
     }
      pub.overallMaxFluctuation = overallMax
-    var comparisonsSet = newKeys
+    var comparisonsSet = newKeys   
     return [newDict,comparisonsSet]
 }
 
@@ -330,6 +318,14 @@ function drawGrid(map,comparisonsSet){
                             d3.select(this).attr("fill","gold")
                             
                             drawKey(d3.select(this).attr("id"))
+                            console.log("scatter")
+                            
+                            d3.select("#comparisonPlot svg").remove()
+                            var x = "Proportional_allocation_to_"+id.split("XXX")[0]
+                            var y = "Proportional_allocation_to_"+id.split("XXX")[1]
+                            scatterPlot(ndx,x,y,1)
+                            
+                            
                         })
                         drawn.push(key)
                     }else{
@@ -367,7 +363,7 @@ function drawKey(key){
     var k2 = key.split("XXX")[1]//.replace("_base_case_capacity_"+currentCapacity,"")
    // console.log([k1,k2])
     var svg = d3.select("#comparisonKey").append("svg")
-        .attr("width",width).attr('height',120)
+        .attr("width",width).attr('height',50)
     var defs = svg.append("defs");
     var gradient = defs.append("linearGradient")
        .attr("id", "svgGradient")
@@ -398,25 +394,27 @@ function drawKey(key){
        .attr("stop-color", keyColors[k2])
        .attr("stop-opacity", 1);
        
-    svg.append("text").text("More workers by".toUpperCase()).attr("y",18).attr("x",20)
-       .attr("fill","#000").style("font-size","12px").style("font-weight","bold").attr("fill",keyColors[k1])
-       
-    svg.append("text").text("More workers by".toUpperCase()).attr("y",18).attr("x",width)
-       .attr("fill","#000").style("font-size","12px").attr("text-anchor","end").style("font-weight","bold").attr("fill",keyColors[k2])
-
-    svg.append("text").text(k1.toUpperCase()).attr("y",40).attr("x",20).style("font-size","12px").style("font-weight","bold").attr("fill",keyColors[k1])//.attr("fill",keyColors[k1])
-    svg.append("text").text(k2.toUpperCase()).attr("y",40).attr("x",width).style("font-size","12px").style("font-weight","bold").attr("text-anchor","end").attr("fill",keyColors[k2])//.attr("fill",keyColors[k2])
-    svg.append("text").text("no difference".toUpperCase()).attr("y",75).attr("x",width/2).attr("text-anchor","middle").style("font-size","12px").style("font-weight","bold")
+    svg.append("text").text("More workers allocated with".toUpperCase()).attr("y",10).attr("x",20)
+       .attr("fill","#000").style("font-size","12px").style("font-weight","bold")
+    //
+    // svg.append("text").text("More workers by".toUpperCase()).attr("y",1).attr("x",width)
+    //    .attr("fill","#000").style("font-size","12px").attr("text-anchor","end").style("font-weight","bold").attr("fill",keyColors[k2])
+    svg.append("text").text("no difference".toUpperCase()).attr("y",75).attr("x",width/2)
+   .attr("text-anchor","middle").style("font-size","12px")
+   .style("font-weight","bold")
     svg.append("rect")
     .attr("class","key")
     .attr('width',width)
-    .attr('height',10)
+    .attr('height',13)
     .attr("x",20)
-    .attr("y",50)
+    .attr("y",15)
     .attr("fill","url(#svgGradient)")
        .attr("stroke","rgba(0,0,0,.5)")
        .attr("stroke-width",.1)
-    
+
+svg.append("text").text(measureDisplayText["Proportional_allocation_to_"+k1].toUpperCase()).attr("y",40).attr("x",20).style("font-size","12px").style("font-weight","bold").attr("fill",keyColors[k1])//.attr("fill",keyColors[k1])
+    svg.append("text").text(measureDisplayText["Proportional_allocation_to_"+k2].toUpperCase()).attr("y",40).attr("x",width).style("font-size","12px").style("font-weight","bold").attr("text-anchor","end").attr("fill",keyColors[k2])//.attr("fill",keyColors[k2])
+       
  //
 // svg.append("rect").attr("width",20).attr("height",20).attr("x",20).attr("y",90).attr("fill","#ddd")
 // svg.append("text").attr("x",45).attr("y",103).text("Counties with no recorded cases")
@@ -613,7 +611,6 @@ function drawMap(data,comparisonsKeys){
                  { hover: true }
                  );
              
-             
                  var x = event.clientX;     // Get the horizontal coordinate
                  var y = event.clientY;             
              
@@ -695,35 +692,20 @@ function drawMap(data,comparisonsKeys){
                      +"</strong><br><br>Number of allocated workers for: <br><strong>"+key1.replace("Proportional_allocation_to_","")+": </strong>"+value1
                      +"<br><strong>"+key2.replace("Proportional_allocation_to_","")+": </strong>"+value2
              
-             
                      var chartData = []
-                                 //
                       for(var p in measureSet){
                           var pk = "Proportional_allocation_to_"+measureSet[p]
                           var pv = feature["properties"][pk]
-                         // displayString+=pk+": "+pv+"<br>"
                           chartData.push({axis:pk,value:pv})
                       }
                  }
-                 
-              
                  d3.select("#mapPopupCompare").html(displayString)
               }
-          //   drawChart(chartData)
          }       
          
          map.on("mouseleave",'counties',function(){
              d3.select("#mapPopupCompare").style("visibility","hidden")
-
          })  
-     
-         // var coordinates = geometry.coordinates[0]
-//
-//          var bounds = coordinates.reduce(function(bounds, coord) {
-//                  return bounds.extend(coord);
-//              }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
-//
-
      });
     
 }
@@ -935,6 +917,45 @@ function PopulateDropDownList(features,map) {
     })
 }
 
+function scatterPlot(ndx,x,y,xRange){
+    var scatter =  new dc.ScatterPlot("#comparisonPlot")
+    var dimension = ndx.dimension(function(d){
+        return [d[x],d[y]]
+    })
+    var group = dimension.group()
+    scatter.width(300)
+          .useCanvas(true)
+        .height(300)
+        .group(group)
+        .dimension(dimension)
+    .x(d3.scaleLinear().domain([-1, 5000]))
+    .y(d3.scaleLinear().domain([-1, 5000]))
+    .xAxisLabel("ALLOCATION FOR "+measureDisplayText[x])
+    .yAxisLabel("ALLOCATION FOR "+measureDisplayText[y])
+    .symbolSize(2)
+    .excludedSize(1)
+    .excludedOpacity(0.5)
+    .colors(["#000000"])
+    .on("filtered",function(){
+        onFiltered(dimension.top(Infinity))
+    })
+    dc.renderAll();
+}
+function onFiltered(data){
+    var gids =[]
+    for(var d in data){
+        gids.push(data[d].County_FIPS)
+
+    }
+    console.log(gids)
+    filterMap(gids)
+}
+
+function filterMap(gids){
+  //  console.log(gids)
+  var filter = ['in',["get",'FIPS'],["literal",gids]];
+	map.setFilter("counties",filter)
+}
 
 //#### Version
 //Determine the current version of dc with `dc.version`
