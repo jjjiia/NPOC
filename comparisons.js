@@ -26,6 +26,7 @@ var pub = {
     satellite:false,
     tract_svi:false,
     all:null,
+    noGeo:null,
     centroids:null,
     histo:null,
     pair:"SVIXXXCovid_capita",
@@ -155,6 +156,7 @@ function ready(counties,centroids,modelData,timeStamp,states){
     var comparisonsKeys = processed[1]
    // console.log(comparisonsKeys)
     var dataByFIPS = processed[0]
+    pub.noGeo = dataByFIPS
     var combinedGeojson = combineGeojson(dataByFIPS,counties)
     pub.all = combinedGeojson
     drawMap(combinedGeojson,comparisonsKeys)
@@ -323,6 +325,7 @@ function drawGrid(map,comparisonsSet){
                             d3.select("#comparisonPlot svg").remove()
                             var x = "Proportional_allocation_to_"+id.split("XXX")[0]
                             var y = "Proportional_allocation_to_"+id.split("XXX")[1]
+                            dc.filterAll();
                             scatterPlot(ndx,x,y,1)
                             
                             
@@ -918,36 +921,47 @@ function PopulateDropDownList(features,map) {
 }
 
 function scatterPlot(ndx,x,y,xRange){
+    
     var scatter =  new dc.ScatterPlot("#comparisonPlot")
     var dimension = ndx.dimension(function(d){
         return [d[x],d[y]]
     })
     var group = dimension.group()
-    scatter.width(300)
+    scatter.width(250)
           .useCanvas(true)
-        .height(300)
+        .height(250)
         .group(group)
         .dimension(dimension)
     .x(d3.scaleLinear().domain([-1, 5000]))
     .y(d3.scaleLinear().domain([-1, 5000]))
     .xAxisLabel("ALLOCATION FOR "+measureDisplayText[x])
     .yAxisLabel("ALLOCATION FOR "+measureDisplayText[y])
-    .symbolSize(2)
+    .symbolSize(1)
     .excludedSize(1)
     .excludedOpacity(0.5)
-    .colors(["#000000"])
+    .colors(["#aaaaaa"])
     .on("filtered",function(){
         onFiltered(dimension.top(Infinity))
     })
+    scatter.xAxis().ticks(4)
+    scatter.yAxis().ticks(4)
     dc.renderAll();
 }
 function onFiltered(data){
     var gids =[]
+    var counties = ""
     for(var d in data){
-        gids.push(data[d].County_FIPS)
-
+        var gid = data[d].County_FIPS
+        gids.push(gid)
+      //  var state = pub.all.features[gid].properties.stateAbbr
+        //var County = pub.all.features[gid].properties.county
+        // console.log(gid)
+      //   console.log(pub.all.features[gid])
+      //   
+        counties+=gid+"<br>"
     }
-    console.log(gids)
+    
+    d3.select("#scatterplotResults").html(gids.length+" counties<br>"+counties)
     filterMap(gids)
 }
 

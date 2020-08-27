@@ -329,6 +329,14 @@ select{
      text-align:center;
  }
  #geocoder{width:30px;}
+ #scatterplotResults{
+   position:absolute;
+   right:10px;
+   bottom:20px;
+   height:200px;
+   width:100px;  
+   overflow:auto;
+ }
  #comparisonPlot{
      border-top:1px solid black;
      width:100%;
