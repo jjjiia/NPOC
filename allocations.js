@@ -382,7 +382,7 @@ function drawMap(data,outline){
          container: 'map',
         style:"mapbox://styles/c4sr-gsapp/ckcnnqpsa2rxx1hp4fhb1j357",//newest
         bounds:bounds,
-        maxZoom:10,
+        maxZoom:8,
          zoom: 3.8,
          preserveDrawingBuffer: true,
         minZoom:3.5,
