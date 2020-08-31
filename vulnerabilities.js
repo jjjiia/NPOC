@@ -31,39 +31,24 @@ var pub = {
     SVIcenter:null,
     column:"Covid_capita"
 }
-var highlightColor = "#DF6D2A"
+var highlightColor = "gold"
 var bghighlightColor = "gold"
 var outlineColor = "#DF6D2A"
-var colors = {
-hotspot:["#A7DCDF","#6EAFC3","#3983A8","#02568B"],
-SVI:["#A7DCDF","#6EAFC3","#3983A8","#02568B"],
-hotspotSVI:["#A7DCDF","#6EAFC3","#3983A8","#02568B"],
-highDemand:["#A7DCDF","#6EAFC3","#3983A8","#02568B"]}
 
 
-  var colorGroups =[
-  "rgba(19,182,163, .4)","rgba(19,182,163, .7)","rgba(19,182,163, 1)",
-  "rgba(162,211,82, .4)","rgba(162,211,82, .7)","rgba(162,211,82, 1)",
-  "rgba(255, 241, 0, .4)","rgba(255, 241, 0, .7)","rgba(255, 241, 0, 1)"
-  ]
-  
-
-var newColors =  ["_10","#ddd",
-                "_0","rgba(19,182,163, 1)",
-                "_1","rgba(162,211,82, 1)",
-                "_2","rgba(255, 241, 0, 1)",
-                '#eee'
-                ]
-    
+var colors = ["#10B6A3","#A2D352","#FFF100"]
+//var colors = ["#E0ECF4","#9EBCDA","#8856A7"]
 var pStops = [[0,.34],[.34,.67],[.67,1]]
 var cStops = [[0,34],[34,67],[67,100]]
 
+/*
 var groupColorDict = []
 for(var g =0; g<colorGroups.length; g++){
     groupColorDict.push("_"+String(g+1))
     groupColorDict.push(colorGroups[g])
 }
 groupColorDict.push("red")
+*/
 
 function loader(){
     function myFunction() {
@@ -155,14 +140,14 @@ var hoveredStateId = null;
 var lineOpacity = {stops:[[0,1],[100,0.3]]}
 var lineWeight = {stops:[[-1,0],[-0.01,0],[0,2],[99,.5],[100,0]]}
 
-var fillColor = {
-        property:null,
-        stops:[
-            [0,"#A7DCDF"],
-            [.005,"#6EAFC3"],
-            [.03,"#3983A8"],
-            [.1,"#02568B"]]
-        }
+// var fillColor = {
+//         property:null,
+//         stops:[
+//             [0,"#A7DCDF"],
+//             [.005,"#6EAFC3"],
+//             [.03,"#3983A8"],
+//             [.1,"#02568B"]]
+//         }
 
 var centroids = null
 var latestDate = null
@@ -401,13 +386,15 @@ function drawMap(data,outline){
          //toggleLayers(map)
          placesMenus(map)
          
+      /*
         lineOpacity["property"]=pub.strategy+"_"+pub.coverage
-        lineWeight["property"]=pub.strategy+"_"+pub.coverage
-        fillColor["property"]="priority_"+pub.strategy.replace("percentage_scenario_","")
-        d3.select("."+pub.coverage+"_radialC")//.style("border","1px solid "+ highlightColor)
-        d3.selectAll("."+pub.coverage).style("background-color","#000").style("color","#fff")
-        d3.selectAll("."+pub.strategy).style("background-color","#000").style("color","#fff")
-        d3.selectAll("."+pub.strategy+"_radialS")//.style("background-color","#000").style("color","#fff")//.style("border","1px solid "+ highlightColor)
+              lineWeight["property"]=pub.strategy+"_"+pub.coverage
+              fillColor["property"]="priority_"+pub.strategy.replace("percentage_scenario_","")
+              d3.select("."+pub.coverage+"_radialC")//.style("border","1px solid "+ highlightColor)
+              d3.selectAll("."+pub.coverage).style("background-color","#000").style("color","#fff")
+              d3.selectAll("."+pub.strategy).style("background-color","#000").style("color","#fff")
+              d3.selectAll("."+pub.strategy+"_radialS")//.style("background-color","#000").style("color","#fff")//.style("border","1px solid "+ highlightColor)*/
+      
      })
      var popup = new mapboxgl.Popup({
          closeButton: false,
@@ -854,7 +841,9 @@ function strategyMenu(map,data){
                          pub.column = clickedId
                          d3.selectAll(".measures").style("background-color","white").style("color","#000")
             
+/*
                          d3.selectAll("#"+clickedId).style("color","#fff").style("background-color","#000")
+*/
                          d3.selectAll("#"+clickedId).style("background-color",highlightColor)
           
                          if(pub.univar==true){
@@ -881,7 +870,8 @@ function colorByPriority(map){
     d3.select("#currentSelection").html("Normalized "+pub.column)
     var matchString = {
     property: "Normalized_"+pub.column,
-    stops: [[0, 'rgba(19,182,163, 1)'],[.5,"#A2D352"],[1, 'rgba(255, 241, 0, 1)']]
+   // stops: [[0, 'rgba(19,182,163, 1)'],[.5,"#A2D352"],[1, 'rgba(255, 241, 0, 1)']]
+    stops: [[0, colors[0]],[.5,colors[1]],[1, colors[2]]]
     }
     
     map.setPaintProperty("counties", 'fill-color', matchString)
@@ -909,7 +899,7 @@ function drawGridWithoutCoverage(map){
     var gridSize = 30
     d3.select("#colorGrid svg").remove()
     var uniSVG = d3.select("#colorGrid").append("svg").attr("width",gridWidth).attr("height",gridHeight)
-    var colorsArray =["rgba(19,182,163, 1)","rgba(162,211,82, 1)","rgba(255, 241, 0, 1)"]
+    // var colorsArray =["rgba(19,182,163, 1)","rgba(162,211,82, 1)","rgba(255, 241, 0, 1)"]
     var label = ["0 - 0.34","0.34 - 0.67","0.67 - 1"]
     var clicked = false
     var currentFilter = null
@@ -938,7 +928,7 @@ function drawGridWithoutCoverage(map){
    //  uniSVG.append("text").attr("x",35).attr("y",204).text("Counties with no recorded cases")
    //  
     uniSVG.selectAll(".uniRect")
-                .data(colorsArray)
+                .data(colors)
                 .enter()
                 .append("rect")
                 .attr("fill",function(d){return d})
@@ -993,7 +983,7 @@ function drawGridWithoutCoverage(map){
                 })
                 
     uniSVG.selectAll(".uniText")
-                .data(colorsArray)
+                .data(colors)
                 .enter()
                 .append("text")
                 .text(function(d,i){

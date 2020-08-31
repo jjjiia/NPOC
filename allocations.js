@@ -34,15 +34,19 @@ var pub = {
     min:999,
     max:0,
     maxAllocationByPop:0,
-    minAllocationByPop:99999999999
+    minAllocationByPop:99999999999,
+    startState:"CA",
+    stateAllocations:null,
+    currentState:"CA"
 }
+var stateAllocationPercentMaxMin = {}
 var allocationMaxs = {
-    
 }
-var highlightColor = "#DF6D2A"
+var highlightColor = "gold"
 var bghighlightColor = "gold"
 var outlineColor = "#DF6D2A"
-
+var colors = ["#17DCFF","#7E6EFF","#E400FF"]
+//var colors = ["#2D7FB8","#7FCDBB","#2D7FB8"]
 
   var colorGroups =[
   "rgba(19,182,163, .4)","rgba(19,182,163, .7)","rgba(19,182,163, 1)",
@@ -171,12 +175,12 @@ function ready(counties,outline,centroids,modelData,timeStamp,states,carto,state
    loader()
      d3.select("#date").html("Model run as of "+timeStamp["columns"][1])
     //convert to geoid dict
-    var dataByFIPS = turnToDictFIPS(modelData,"County_FIPS")
+    var dataByFIPS = turnToDictFIPS(modelData,"County_FIPS",stateAllocations)
     
     //pub.all = {"highDemand":highDemand,"hotspot":hotspot,"SVI":SVI,"hotspotSVI":hotspotSVI,"normal":normalizedP}
     pub.centroids = formatCentroids(centroids.features)
     //add to geojson of counties
-    var combinedGeojson = combineGeojson(dataByFIPS,counties)
+    var combinedGeojson = combineGeojson(dataByFIPS,counties,stateAllocations)
     pub.all = combinedGeojson
     
     //    console.log(combinedGeojson)
@@ -207,6 +211,7 @@ function ready(counties,outline,centroids,modelData,timeStamp,states,carto,state
     //    
     
     cartogram(carto,stateAllocations)
+    pub.stateAllocations = stateAllocations
         //drawHistogram(pub.strategy,pub.coverage)
     map.once("idle",function(){
         colorByPriority(map)
@@ -231,55 +236,72 @@ function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-function turnToDictFIPS(data,keyColumn){
-
+function turnToDictFIPS(data,keyColumn,stateAllocations){
+  //  console.log(stateAllocations)
+    var stateAllocationDictionary = formatState(stateAllocations)[0]
+   // console.log(stateAllocationDictionary)
     var newDict = {}
     var maxPriority = 0
     var keys = Object.keys(data[0])
     //console.log(keys)
     var notBinaryCoverage = []
+    var state_tiger_dict = {'01':'AL','02':'AK','04':'AZ','05':'AR','06':'CA','08':'CO','09':'CT','10':'DE','11':'DC','12':'FL','13':'GA','15':'HI','16':'ID','17':'IL','18':'IN','19':'IA','20':'KS','21':'KY','22':'LA','23':'ME','24':'MD','25':'MA','26':'MI','27':'MN','28':'MS','29':'MO','30':'MT','31':'NE','32':'NV','33':'NH','34':'NJ','35':'NM','36':'NY','37':'NC','38':'ND','39':'OH','40':'OK','41':'OR','42':'PA','44':'RI','45':'SC','46':'SD','47':'TN','48':'TX','49':'UT','50':'VT','51':'VA','53':'WA','54':'WV','55':'WI','56':'WY','60':'AS','66':'GU','69':'MP','72':'PR','78':'VI'}
+    
     for(var i in data){
         var key = String(data[i][keyColumn])
         if(key.length==4){
             key= "0"+key
         }
-        var values = data[i]
-        for(var j in measureSet){
-            var measureKey = measureSet[j]
-            var priorityKey = "Normalized_"+measureKey
-            var priority = parseFloat(data[i][priorityKey])
-            var allocated =Math.floor(parseFloat(data[i][measureKey]))
-            
-            if(Object.keys(allocationMaxs).indexOf(measureKey)==-1){
-                allocationMaxs[measureKey]=allocated
-            }else{
-                if(allocated>allocationMaxs[measureKey]){
-                    allocationMaxs[measureKey]=allocated
-                }
-            }
-            
-            if(allocated>pub.max){pub.max=allocated}
-            if(allocated<pub.min && allocated!=0){pub.min=allocated}
-            
-            for(var ps in pStops){
-                var pStop = pStops[ps]
-                if(priority>=pStop[0] && priority<=pStop[1]){
-                    var pGroup = "_"+ps
-                    break
-                }                
-            }
-            values["group_"+measureKey]=pGroup
-                      
-        }
+
+        var stateCode = String(key.slice(0,2))
+        var stateAbbr = state_tiger_dict[stateCode]
         
-        newDict[key]=values
-        //break
+        if(stateAbbr!=undefined){
+            var stateName = stateNameDictionary[stateAbbr].toUpperCase()
+            var stateTotal = stateAllocationDictionary[stateName]
+            //console.log(stateTotal)
+            var values = data[i]
+       
+            for(var j in measureSet){
+                var measureKey = measureSet[j]
+                var priorityKey = "Normalized_"+measureKey
+                var priority = parseFloat(data[i][priorityKey])
+                var allocated =Math.floor(parseFloat(data[i][measureKey]))
+                var percentAllocated = Math.round(allocated/stateTotal*10000)/100
+                values["percentAllocated_"+measureKey]=percentAllocated
+                
+                if(Object.keys(stateAllocationPercentMaxMin).indexOf(stateAbbr)==-1){
+                    stateAllocationPercentMaxMin[stateAbbr]={}
+                    stateAllocationPercentMaxMin[stateAbbr].min=percentAllocated
+                    stateAllocationPercentMaxMin[stateAbbr].max=percentAllocated
+                }else{
+                    if(percentAllocated>stateAllocationPercentMaxMin[stateAbbr].max){
+                        stateAllocationPercentMaxMin[stateAbbr].max=percentAllocated
+                     }
+                     if(percentAllocated<stateAllocationPercentMaxMin[stateAbbr].min){
+                         stateAllocationPercentMaxMin[stateAbbr].min=percentAllocated
+                      }
+                     
+                }
+                
+                if(Object.keys(allocationMaxs).indexOf(measureKey)==-1){
+                    allocationMaxs[measureKey]=allocated
+                }else{
+                    if(allocated>allocationMaxs[measureKey]){
+                        allocationMaxs[measureKey]=allocated
+                    }
+                }
+                if(percentAllocated>pub.max){pub.max=percentAllocated}
+                if(percentAllocated<pub.min && percentAllocated!=0){pub.min=percentAllocated}      
+            }
+            newDict[key]=values
+        }        
     }
-    //console.log(allocationMaxs)
-    pub.max = pub.max
+   // console.log(newDict)
     return newDict
 }
-function combineGeojson(all,counties){
+function combineGeojson(all,counties,stateAllocations){
+    
     for(var c in counties.features){
         var countyFIPS = counties.features[c].properties.FIPS
         var data = all[countyFIPS]
@@ -432,7 +454,11 @@ function drawMap(data,outline){
         // d3.select("."+pub.coverage+"_radialC")//.style("border","1px solid "+ highlightColor)
         // d3.selectAll("."+pub.coverage).style("background-color","#000").style("color","#fff")
         // d3.selectAll("."+pub.strategy).style("background-color","#000").style("color","#fff")
-        d3.selectAll("."+pub.strategy+"_radialS")//.style("background-color","#000").style("color","#fff")//.style("border","1px solid "+ highlightColor)
+        //d3.selectAll("."+pub.strategy+"_radialS")//.style("background-color","#000").style("color","#fff")//.style("border","1px solid "+ highlightColor)
+            cartoGoToState(pub.startState)
+            d3.selectAll(".hex").attr("opacity",0.5)
+            d3.select("."+pub.startState+"_hex").attr("opacity",1)
+        
      })
      var popup = new mapboxgl.Popup({
          closeButton: false,
@@ -526,6 +552,7 @@ function drawMap(data,outline){
                      +"<strong>Number of workers allocated using "+measureDisplayTextPop[pub.column]+":</strong> "
                      +Math.floor(feature.properties[pub.column])+"<br>"
                      +"<br>"
+                 +"constitutes "+feature.properties["percentAllocated_"+pub.column]+"% of the total workers statewide"
                  
              var needsMetString = currentSelectionCoverage+"% of needs met</strong>"
              
@@ -870,10 +897,10 @@ function strategyMenu(map,data){
              .attr("stroke","black")
              .style("cursor","pointer")
              .on("click",function(){
-                         var filter = ["!=","percentage_scenario_SVI_hotspot_base_case_capacity_30",-1]
-                         d3.selectAll(".measureGrid").attr("fill","white")
-                         d3.select(this).attr("fill","black")
-                         map.setFilter("counties",filter)
+                        // var filter = ["!=","percentage_scenario_SVI_hotspot_base_case_capacity_30",-1]
+                        // d3.selectAll(".measureGrid").attr("fill","white")
+                       //  d3.select(this).attr("fill","black")
+                        // map.setFilter("counties",filter)
                          clickedId = d3.select(this).attr("id")
                          pub.column = clickedId
                          d3.selectAll(".measures").style("background-color","white").style("color","#000")
@@ -881,14 +908,15 @@ function strategyMenu(map,data){
                          d3.selectAll("#"+clickedId).style("color","#fff").style("background-color","#000")
                          d3.selectAll("#"+clickedId).style("background-color",highlightColor)
           
-                         if(pub.univar==true){
-                             //drawGridWithoutCoverage(map)
-                             colorByWorkers(map)
-                         }else{
-                             colorByPriority(map)
-                             //drawGrid(map,pub.all)
-                         }
-                         pub.histo = histo(pub.all)
+                         colorByPriority(map)
+                         // if(pub.univar==true){
+ //                             //drawGridWithoutCoverage(map)
+ //                             colorByWorkers(map)
+ //                         }else{
+ //                             colorByPriority(map)
+ //                             //drawGrid(map,pub.all)
+ //                         }
+ //                         pub.histo = histo(pub.all)
                      })
            
          }
@@ -900,11 +928,17 @@ function strategyMenu(map,data){
                 
 function colorByPriority(map){
     map.setPaintProperty("counties", 'fill-opacity',1)
+    var maxMin =  stateAllocationPercentMaxMin[pub.currentState]
+    
+    var max = parseFloat(maxMin.max)
+    var min = parseFloat(maxMin.min)
+    var midPoint = min+(max-min)/2
     // var matchString = ["match",
  //                ["get","group_"+pub.column]].concat(newColors)
     var matchString = {
-    property: pub.column,
-    stops: [[0, '#17DCFF'],[allocationMaxs[pub.column]/2,"#7E6EFF"],[allocationMaxs[pub.column], '#E400FF']]
+    property: "percentAllocated_"+pub.column,
+//    stops: [[0, colors[0]],[allocationMaxs[pub.column]/2,colors[1]],[allocationMaxs[pub.column], colors[2]]]
+    stops: [[0, colors[0]],[midPoint,colors[1]],[max, colors[2]]]
     }
     map.setPaintProperty("counties", 'fill-color', matchString)
     drawGridWithoutCoverage(map)
@@ -918,7 +952,7 @@ function drawGridWithoutCoverage(map){
     var gridSize = 30
     d3.select("#colorGrid svg").remove()
     var uniSVG = d3.select("#colorGrid").append("svg").attr("width",gridWidth).attr("height",gridHeight)
-    var colorsArray =["#17DCFF","#7E6EFF","#E400FF"]
+   // var colorsArray =["#17DCFF","#7E6EFF","#E400FF"]
     var label = [0,allocationMaxs[pub.column]/2,allocationMaxs[pub.column]]
     var clicked = false
     var currentFilter = null
@@ -941,7 +975,7 @@ function drawGridWithoutCoverage(map){
    //  uniSVG.append("text").attr("x",35).attr("y",204).text("Counties with no recorded cases")
    //  
     uniSVG.selectAll(".uniRect")
-                .data(colorsArray)
+                .data(colors)
                 .enter()
                 .append("rect")
                 .attr("fill",function(d){return d})
@@ -996,7 +1030,7 @@ function drawGridWithoutCoverage(map){
                 })
                 
     uniSVG.selectAll(".uniText")
-                .data(colorsArray)
+                .data(colors)
                 .enter()
                 .append("text")
                 .text(function(d,i){
@@ -1260,12 +1294,12 @@ function PopulateDropDownList(features,map) {
     })          
     var ddlCustomers = document.getElementById("ddlCustomers");
  
-    var option = document.createElement("OPTION");
-    option.innerHTML = "Contiguous 48"
-    option.value = "C48";
-        option.id = "Contiguous 48"
-    
-    ddlCustomers.options.add(option);
+    // var option = document.createElement("OPTION");
+    // option.innerHTML = "Contiguous 48"
+    // option.value = "C48";
+    //     option.id = "Contiguous 48"
+    //
+    // ddlCustomers.options.add(option);
     //Add the Options to the DropDownList.
     var boundsDict = {}
     
@@ -1289,6 +1323,7 @@ function PopulateDropDownList(features,map) {
     pub.bounds = boundsDict
    $('select').on("change",function(){
       // console.log(this.value)
+       
        if(this.value=="C48"){
         //   console.log("ok")
            zoomToBounds(map)
@@ -1316,13 +1351,15 @@ function PopulateDropDownList(features,map) {
            var bounds =  new mapboxgl.LngLatBounds(coords);
            map.fitBounds(bounds,{padding:60},{bearing:0})
            var state_tiger_dict = {'01':'AL','02':'AK','04':'AZ','05':'AR','06':'CA','08':'CO','09':'CT','10':'DE','11':'DC','12':'FL','13':'GA','15':'HI','16':'ID','17':'IL','18':'IN','19':'IA','20':'KS','21':'KY','22':'LA','23':'ME','24':'MD','25':'MA','26':'MI','27':'MN','28':'MS','29':'MO','30':'MT','31':'NE','32':'NV','33':'NH','34':'NJ','35':'NM','36':'NY','37':'NC','38':'ND','39':'OH','40':'OK','41':'OR','42':'PA','44':'RI','45':'SC','46':'SD','47':'TN','48':'TX','49':'UT','50':'VT','51':'VA','53':'WA','54':'WV','55':'WI','56':'WY','60':'AS','66':'GU','69':'MP','72':'PR','78':'VI'}
-           console.log(this.value)
            var currentState = state_tiger_dict[this.value]
           var filter = ["==","stateAbbr",currentState]
           map.setFilter("counties",filter)
+            pub.currentState = currentState
+           
   //    
        }
     })
+    $('select').val("06")
 }
 
 function placesMenus(map){

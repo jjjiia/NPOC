@@ -248,11 +248,24 @@ font-family: 'Hammersmith One', sans-serif;}
      text-align:right;
      padding:10px;
  }
+ #stateHeader{
+     padding:10px;
+     font-size:12px;
+     margin:0px;
+     width:270px;
+ }
+ #stateKey{
+     padding:10px;
+     font-size:12px;
+     margin:0px;
+     width:270px;
+     border-bottom:1px solid black;
+ }
  #placesMenu{
      font-size:10px;
      padding:10px;
      margin:0px;
-     width:280;
+     width:270px;
      border-bottom:1px solid black;
  }
  .placesLink{

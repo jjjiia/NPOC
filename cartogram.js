@@ -28,14 +28,16 @@ formatState(stateAllocations)
             var state = d.properties["google_name"].replace(" (United States)","")
             var caps = state.toUpperCase()
             return cScale(formattedState[caps]);
-            return "black"
         })
         .attr("d", path)
         .attr("stroke", "white")
         .style("cursor","pointer")
+        .attr("class",function(d){return d.properties["iso3166_2"]+"_hex hex"})
         .on("click",function(d){
             var state = d.properties["iso3166_2"]
             cartoGoToState(state)
+            d3.selectAll(".hex").attr("opacity",0.5)
+            d3.select("."+state+"_hex").attr("opacity",1)
         })
         .on("mouseover",function(d){
             var state = d.properties["google_name"].replace(" (United States)","")
@@ -72,13 +74,16 @@ formatState(stateAllocations)
         .style("font-size", 10)
         .style("font-family", "helvetica")
         .style("fill", "white")
-
-            .style("padding","5px")
-            .style("border","1px solid black")
+        .attr("class",function(d){return d.properties["iso3166_2"]+"_label"})
+        .style("padding","5px")
+        .style("border","1px solid black")
         .style("cursor","pointer")
         .on("click",function(d){
             var state = d.properties["iso3166_2"]
+            pub.currentState = state
             cartoGoToState(state)
+            d3.selectAll(".hex").attr("opacity",0.5)
+            d3.select("."+state+"_hex").attr("opacity",1)
         })
         .on("mouseover",function(d){
             var state = d.properties["google_name"].replace(" (United States)","")
@@ -140,4 +145,25 @@ function cartoGoToState(state){
     var currentState = state
    var filter = ["==","stateAbbr",currentState]
    map.setFilter("counties",filter)
+           $('select').val(stateToNumber[state])
+    
+          var stateName = stateNameDictionary[pub.currentState].toUpperCase()
+          var allocated = formatState(pub.stateAllocations)[0][stateName]
+          var max = stateAllocationPercentMaxMin[pub.currentState].max
+          var min = stateAllocationPercentMaxMin[pub.currentState].min
+    
+    d3.select("#stateHeader").html("<span style=\"font-size:24px; font-weight:bold;\">"+stateName+"</span><br>"
+      +"Total Workers Allocated: "+Math.floor(allocated) +"<br>"
+      )
+    
+    d3.select("#stateKey").html("")
+    d3.select("#stateKey").append("div").attr("id","keyHeader").html("% of state workers allocated to each county")
+    d3.select("#stateKey").append("div").attr("id","keyRangeMin").html(min+"%").style("display","inline-block").style("padding","5px")
+    d3.select("#stateKey").append("div").attr("id","keyRangeGradient")
+          .style("width","150px").style("height","10px")
+      .style("background-image","linear-gradient(to right, "+colors[0]+" , "+colors[1]+","+colors[2]+")")
+      .style("display","inline-block")
+    d3.select("#stateKey").append("div").attr("id","keyRangeMax").html(max+"%").style("display","inline-block").style("padding","5px")
+      
+          
 }
