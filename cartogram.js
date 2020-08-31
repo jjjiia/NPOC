@@ -5,7 +5,7 @@ function cartogram(data,stateAllocations){
     var max = formatState(stateAllocations)[1]
     var min = formatState(stateAllocations)[2]
     var total = formatState(stateAllocations)[3]
-    console.log([max,min,total])
+   // console.log([max,min,total])
   var width =300
   var height = 160
   var svg = d3.select("#cartogram").append("svg").attr("width",width).attr("height",height)
@@ -32,6 +32,7 @@ formatState(stateAllocations)
         .attr("d", path)
         .attr("stroke", "white")
         .style("cursor","pointer")
+        .attr("id",function(d){return  d.properties["iso3166_2"]+"_carto"})
         .attr("class",function(d){return d.properties["iso3166_2"]+"_hex hex"})
         .on("click",function(d){
             var state = d.properties["iso3166_2"]
@@ -74,7 +75,8 @@ formatState(stateAllocations)
         .style("font-size", 10)
         .style("font-family", "helvetica")
         .style("fill", "white")
-        .attr("class",function(d){return d.properties["iso3166_2"]+"_label"})
+        .attr("id",function(d){return  d.properties["iso3166_2"]+"_carto"})
+        .attr("class",function(d){return d.properties["iso3166_2"]+"_label hexLabel"})
         .style("padding","5px")
         .style("border","1px solid black")
         .style("cursor","pointer")
@@ -138,9 +140,15 @@ function cartoGoToState(state){
               });
           }else{
               var bounds =  new mapboxgl.LngLatBounds(coords);
-              map.fitBounds(bounds,{padding:60},{bearing:0})
+              map.fitBounds(bounds,{padding:100},{bearing:0})
    
           }
+           
+           map.setFilter("county-name",["==","STATEFP",stateToNumber[state]])
+           map.setFilter("state-abbr",["==","STATEFP",stateToNumber[state]])
+           map.setFilter("reservation-name",["==","STATE",state])
+           map.setFilter("state_mask",["!=","STATEFP",stateToNumber[state]])     
+          
        
     var currentState = state
    var filter = ["==","stateAbbr",currentState]
@@ -158,7 +166,7 @@ function cartoGoToState(state){
     
     d3.select("#stateKey").html("")
     d3.select("#stateKey").append("div").attr("id","keyHeader").html("% of state workers allocated to each county")
-    d3.select("#stateKey").append("div").attr("id","keyRangeMin").html(min+"%").style("display","inline-block").style("padding","5px")
+    d3.select("#stateKey").append("div").attr("id","keyRangeMin").html("0%").style("display","inline-block").style("padding","5px")
     d3.select("#stateKey").append("div").attr("id","keyRangeGradient")
           .style("width","150px").style("height","10px")
       .style("background-image","linear-gradient(to right, "+colors[0]+" , "+colors[1]+","+colors[2]+")")

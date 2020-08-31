@@ -391,6 +391,8 @@ function drawMap(data,outline){
      
      map.on("load",function(){
          
+     //    console.log(map.getStyle().layers)
+         
         $('#map').show();
 
         map.resize();
@@ -456,6 +458,11 @@ function drawMap(data,outline){
         // d3.selectAll("."+pub.strategy).style("background-color","#000").style("color","#fff")
         //d3.selectAll("."+pub.strategy+"_radialS")//.style("background-color","#000").style("color","#fff")//.style("border","1px solid "+ highlightColor)
             cartoGoToState(pub.startState)
+           
+           map.setFilter("county-name",["==","STATEFP","06"])
+           map.setFilter("state-abbr",["==","STATEFP","06"])
+           map.setFilter("reservation-name",["==","STATE",pub.startState])
+           map.setFilter("state_mask",["!=","STATEFP","06"])
             d3.selectAll(".hex").attr("opacity",0.5)
             d3.select("."+pub.startState+"_hex").attr("opacity",1)
         
@@ -483,6 +490,9 @@ function drawMap(data,outline){
   //      d3.select("#SVIMap").style("display","block")
     //    d3.select("#SVIText").html("SVI Census Tract Level Map TEMPORARY<br><br>COUNTY: "+pub.SVIFIPS+"<br>Id vel atqui commodo bonorum. Sit eu menandri percipitur adversarium, quis error nostrud an sea, cu paulo mundi his. Vel ut iusto omittam temporibus, sea nullam tamquam periculis ea. Te cum brute malorum praesent, eu sed vero omittam consulatu, usu illum deserunt no.")
         
+    })
+    map.on("mousemove","ST-OUTLINE",function(c){
+        console.log(c.features)
     })
      map.on('mousemove', 'counties', function(e) {
          var feature = e.features[0]
@@ -1322,7 +1332,7 @@ function PopulateDropDownList(features,map) {
     }
     pub.bounds = boundsDict
    $('select').on("change",function(){
-      // console.log(this.value)
+      // console.log(this.value)       
        
        if(this.value=="C48"){
         //   console.log("ok")
@@ -1352,9 +1362,19 @@ function PopulateDropDownList(features,map) {
            map.fitBounds(bounds,{padding:60},{bearing:0})
            var state_tiger_dict = {'01':'AL','02':'AK','04':'AZ','05':'AR','06':'CA','08':'CO','09':'CT','10':'DE','11':'DC','12':'FL','13':'GA','15':'HI','16':'ID','17':'IL','18':'IN','19':'IA','20':'KS','21':'KY','22':'LA','23':'ME','24':'MD','25':'MA','26':'MI','27':'MN','28':'MS','29':'MO','30':'MT','31':'NE','32':'NV','33':'NH','34':'NJ','35':'NM','36':'NY','37':'NC','38':'ND','39':'OH','40':'OK','41':'OR','42':'PA','44':'RI','45':'SC','46':'SD','47':'TN','48':'TX','49':'UT','50':'VT','51':'VA','53':'WA','54':'WV','55':'WI','56':'WY','60':'AS','66':'GU','69':'MP','72':'PR','78':'VI'}
            var currentState = state_tiger_dict[this.value]
-          var filter = ["==","stateAbbr",currentState]
-          map.setFilter("counties",filter)
             pub.currentState = currentState
+           
+           cartoGoToState( currentState )
+           d3.selectAll(".hex").attr("opacity",.5)
+           d3.select("#"+currentState+"_carto").attr("opacity",1)
+          // var filter = ["==","stateAbbr",currentState]
+   //        map.setFilter("counties",filter)
+   //
+   //         map.setFilter("county-name",["==","STATEFP",this.value])
+   //         map.setFilter("state-abbr",["==","STATEFP",this.value])
+   //         map.setFilter("reservation-name",["==","STATE",currentState])
+   //         map.setFilter("state_mask",["!=","STATEFP",this.value])
+   //
            
   //    
        }
