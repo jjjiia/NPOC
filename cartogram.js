@@ -148,6 +148,7 @@ function cartoGoToState(state){
            map.setFilter("state-abbr",["==","STATEFP",stateToNumber[state]])
            map.setFilter("reservation-name",["==","STATE",state])
            map.setFilter("state_mask",["!=","STATEFP",stateToNumber[state]])     
+           map.setFilter("state_mask_outline",["==","STATEFP",stateToNumber[state]])     
           
        
     var currentState = state

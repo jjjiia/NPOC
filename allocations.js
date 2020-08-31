@@ -421,17 +421,17 @@ function drawMap(data,outline){
              'type': 'line',
              'source': 'counties',
              'paint': {
-                 //'line-color':"#000",
+                 'line-color':"#ffffff",
                  'line-opacity':[
                     'case',
                     ['boolean', ['feature-state', 'hover'], false],
                     1,
-                    .15
+                    1
                  ],
                  'line-width':[
                     'case',
                     ['boolean', ['feature-state', 'hover'], false],
-                    2,
+                    4,
                     1
                  ]
              },
@@ -463,6 +463,8 @@ function drawMap(data,outline){
            map.setFilter("state-abbr",["==","STATEFP","06"])
            map.setFilter("reservation-name",["==","STATE",pub.startState])
            map.setFilter("state_mask",["!=","STATEFP","06"])
+           map.setFilter("state_mask_outline",["==","STATEFP","06"])     
+        
             d3.selectAll(".hex").attr("opacity",0.5)
             d3.select("."+pub.startState+"_hex").attr("opacity",1)
         
