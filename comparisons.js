@@ -35,16 +35,18 @@ var pub = {
     countyHighlighted:null,
     fluctuation:false,
     overallMaxFluctuation:0,
-    showRangeOnly:false
+    showRangeOnly:false,
+    bounds:null,
+    startState:"CA",
+    stateAllocations:null,
+    currentState:"CA",
+    dataByState:null
 }
+var stateAllocationPercentMaxMin = {}
+
 var highlightColor = "#DF6D2A"
 var bghighlightColor = "gold"
 var outlineColor = "#DF6D2A"
-var colors = {
-hotspot:["#A7DCDF","#6EAFC3","#3983A8","#02568B"],
-SVI:["#A7DCDF","#6EAFC3","#3983A8","#02568B"],
-hotspotSVI:["#A7DCDF","#6EAFC3","#3983A8","#02568B"],
-highDemand:["#A7DCDF","#6EAFC3","#3983A8","#02568B"]}
 
 var minCoverage = 10
 var maxCoverage = 80
@@ -52,7 +54,7 @@ var coverageInterval = 10
 
 var colorEnd = "#6FAFC4"
 var colorStart = "#604F23"
-var keyColors = {high_demand:"#EA00FF",SVI_hotspot:"#F45180",SVI_pop:"#45B6A3",hotspot:"#7E6EFF",SVI_high_demand:"#71BF4D"}
+// var keyColors = {high_demand:"#EA00FF",SVI_hotspot:"#F45180",SVI_pop:"#45B6A3",hotspot:"#7E6EFF",SVI_high_demand:"#71BF4D"}
 
 
 var keyColors = {
@@ -70,6 +72,16 @@ var keyColors = {
     Covid_med:"#cb983f",
     Covid_capita_med:"#e8b72b"
 }
+
+
+var keyColors = {
+    SVI:"#FF9F00",
+    YPLL:"#A2D352",
+    Unemployment:"#17DCFF",
+    Covid_capita:"#7E6EFF",
+    Covid_death_capita:"#E400FF"    
+}
+
 
 
 
@@ -121,7 +133,8 @@ var counties = d3.json("counties.geojson")
 var allData = d3.csv("County_level_proportional_allocation_for_all_policies.csv")
 var timeStamp = d3.csv("https://raw.githubusercontent.com/CenterForSpatialResearch/allocation_chw/master/Output/time_stamp.csv")
 var states = d3.json("simplestates.geojson")
-
+var carto= d3.json("cartogram.geojson")
+var stateAllocations = d3.csv("state_level_allocation.csv")
 var coverageSet = []
 var coverageDisplayText = {show_all:"Hide Coverage Info"}
 for(var c = 1; c<=8; c++){
@@ -130,9 +143,9 @@ for(var c = 1; c<=8; c++){
     coverageDisplayText[setTerm] = c*10+' CHW per 100,000 residents'
  }
 
-Promise.all([counties,countyCentroids,allData,timeStamp,states])
+Promise.all([counties,countyCentroids,allData,timeStamp,states,carto,stateAllocations])
 .then(function(data){
-    ready(data[0],data[1],data[2],data[3],data[4])
+    ready(data[0],data[1],data[2],data[3],data[4],data[5],data[6])
 })
 
 var lineOpacity = {stops:[[0,1],[100,0.3]]}
@@ -150,25 +163,46 @@ var fillColor = {
 var centroids = null
 var latestDate = null
 
-function ready(counties,centroids,modelData,timeStamp,states){
+function ready(counties,centroids,modelData,timeStamp,states,carto,stateAllocations){
     pub.states = states
     d3.select("#date").html("Model run as of "+timeStamp["columns"][1])
+    
     var processed = turnToDictFIPS(modelData,"County_FIPS")
     var comparisonsKeys = processed[1]
    // console.log(comparisonsKeys)
     var dataByFIPS = processed[0]
     pub.noGeo = dataByFIPS
     var combinedGeojson = combineGeojson(dataByFIPS,counties)
+    
+   pub.dataByState = dataByState(combinedGeojson.features)
+    
+    
     pub.onlyGeo = turnToDictFIPS(counties.features,"id")[0]
     pub.all = combinedGeojson
     drawMap(combinedGeojson,comparisonsKeys)
   
     ndx = crossfilter(modelData);
     var all = ndx.groupAll();  
-    scatterPlot(ndx,"Proportional_allocation_to_"+pub.pair.split("XXX")[0],"Proportional_allocation_to_"+pub.pair.split("XXX")[1],1000)
+   // scatterPlot(ndx,"Proportional_allocation_to_"+pub.pair.split("XXX")[0],"Proportional_allocation_to_"+pub.pair.split("XXX")[1],1000)
   
+  
+    cartogram(carto,stateAllocations)
   
 };
+function dataByState(data){
+    var formatted = {}
+    for(var i in data){
+        var state = data[i].properties.stateAbbr
+        var values =data[i].properties
+        if(Object.keys(formatted).indexOf(state)==-1){
+            formatted[state]=[]
+            formatted[state].push(values)
+        }else{
+            formatted[state].push(values)
+        }
+    }
+    return formatted
+}
 
 
 function numberWithCommas(x) {
@@ -240,22 +274,22 @@ function turnToDictFIPS(data,keyColumn){
     }
      pub.overallMaxFluctuation = overallMax
     var comparisonsSet = newKeys   
+   // console.log(newDict)
     return [newDict,comparisonsSet]
 }
 
 function combineGeojson(all,counties){
     for(var c in counties.features){
-        var countyFIPS = counties.features[c].properties.FIPS
+        var countyFIPS = counties.features[c].properties.FIPS        
         var data = all[countyFIPS]
        // console.log(data)
-        
         counties.features[c]["id"]=countyFIPS
         
         if(data!=undefined){            
             var keys = Object.keys(data)
             for(var k in keys){
                 var key = keys[k]
-                if(isNaN(parseFloat(value))==true || key=="County_FIPS"|| key=="maxKey"){
+                if(isNaN(value)==true){
                      var value = data[key]
                  }else{
                      var value = parseFloat(data[key])
@@ -264,16 +298,17 @@ function combineGeojson(all,counties){
             }
         }
     }
+  //  console.log(counties)
     return counties
 }
 
 function drawGrid(map,comparisonsSet){
     var drawn = []
-    var svg = d3.select("#comparisonGrid").append("svg").attr("width",290).attr("height",300)
-    var gridSize = 20
+    var svg = d3.select("#comparisonGrid").append("svg").attr("width",290).attr("height",200)
+    var gridSize = 18
     for(var i in measureSet){
             var x = i*gridSize+140
-            var y = 130
+            var y = 100
                 svg.append("text")
                 .text(measureDisplayText["Proportional_allocation_to_"+measureSet[i]])
                 .attr("x",x)
@@ -289,7 +324,7 @@ function drawGrid(map,comparisonsSet){
                 .style("font-size","12px")
                 .attr("x",i)
                 .attr("y",j*gridSize+gridSize/2)
-                .attr("transform","translate(125,135)")
+                .attr("transform","translate(125,105)")
                 .attr("text-anchor","end")
                 .attr("fill",keyColors[measureSet[j]])
             }
@@ -304,15 +339,16 @@ function drawGrid(map,comparisonsSet){
                 }
                 if(comparisonsSet.indexOf(key)>-1 && drawn.indexOf(key)==-1){
                     svg.append("rect")
-                        .attr("width",gridSize-4)
-                        .attr("height",gridSize-4)
+                        .attr("width",gridSize-3)
+                        .attr("height",gridSize-3)
                         .attr("x",gridSize*j)
                         .attr("y",gridSize*i)
                         .attr("id",key.replace("compare_",""))
                         .attr("class","grid")
-                        .attr("transform","translate(130,135)")
+                        .attr("transform","translate(130,105)")
                         .attr("cursor","pointer")
                         .on("click",function(){
+                          //  console.log("grid click")
                             pub.showRangeOnly = false
                             var id = d3.select(this).attr("id")
                           //  var key = "compare_"+id.split("XXX")[0]+"_"+currentCapacity+"_"+id.split("XXX")[1]+"_"+currentCapacity
@@ -322,14 +358,15 @@ function drawGrid(map,comparisonsSet){
                             d3.select(this).attr("fill","gold")
                             
                             drawKey(d3.select(this).attr("id"))
-                            console.log("scatter")
+                          //  console.log("scatter")
                             
                             d3.select("#comparisonPlot svg").remove()
                             var x = "Proportional_allocation_to_"+id.split("XXX")[0]
                             var y = "Proportional_allocation_to_"+id.split("XXX")[1]
-                            dc.filterAll();
-                            scatterPlot(ndx,x,y,1)
-                            
+                             //dc.filterAll();
+                            // scatterPlot(ndx,x,y,1)
+                             newScatterPlot(pub.currentState)
+  // 
                             
                         })
                         drawn.push(key)
@@ -339,7 +376,7 @@ function drawGrid(map,comparisonsSet){
                         .attr("height",gridSize-6)
                         .attr("x",gridSize*j)
                         .attr("y",gridSize*i)
-                        .attr("transform","translate(130,135)")
+                        .attr("transform","translate(130,105)")
                         .attr("fill","none")
                         .attr("stroke","#ddd")
                     }
@@ -349,7 +386,7 @@ function drawGrid(map,comparisonsSet){
                         .attr("height",gridSize-6)
                         .attr("x",gridSize*j)
                         .attr("y",gridSize*i)
-                        .attr("transform","translate(130,135)")
+                        .attr("transform","translate(130,105)")
                         .attr("fill","none")
                         .attr("stroke","#ddd")
             }
@@ -386,12 +423,12 @@ function drawKey(key){
     gradient.append("stop")
        .attr('class', 'end')
        .attr("offset", "40%")
-       .attr("stop-color", "white")
+       .attr("stop-color", "#ddd")
        .attr("stop-opacity", 1);
     gradient.append("stop")
        .attr('class', 'end')
        .attr("offset", "60%")
-       .attr("stop-color", "white")
+       .attr("stop-color", "#ddd")
        .attr("stop-opacity", 1);
     gradient.append("stop")
        .attr('class', 'end')
@@ -479,11 +516,18 @@ function colorMap(map,key){
    // console.log(currentCapacity)
     var measureStart = key.split("XXX")[0]
     var measureEnd = key.split("XXX")[1]
+    
+    //console.log([measureEnd,measureStart])
+    
     var colorStart = keyColors[measureStart]
     var colorEnd = keyColors[measureEnd]
+  //  console.log(colorStart)
+    
+    var rangeExtent = d3.extent(pub.dataByState[pub.currentState].map(function(d){return d["compare_"+pub.pair]}))
+    
  //
     var dataProperty = "compare_"+key
-    var color = {property:dataProperty,stops:[[-1000,colorStart],[0,"#fff"],[1000,colorEnd]]}
+    var color = {property:dataProperty,stops:[[rangeExtent[0],colorStart],[0,"#ddd"],[rangeExtent[1],colorEnd]]}
     map.setPaintProperty("counties", 'fill-color', color)
     
 }
@@ -512,16 +556,16 @@ function drawMap(data,comparisonsKeys){
         maxBounds: maxBounds    
     });
     
-    d3.select("#backToNational")
-    .style("cursor","pointer")
-    .on("click",function(){
-        zoomToBounds(map)
-        var filter = ["!=","stateAbbr",""]
-        map.setFilter("counties",filter)
-        document.getElementById("ddlCustomers").value = "Contiguous 48"
-        document.getElementById("ddlCustomers").id = "Contiguous 48"
-        d3.select("#backToNational").style("visibility","hidden")
-    })
+    // d3.select("#backToNational")
+ //    .style("cursor","pointer")
+ //    .on("click",function(){
+ //        zoomToBounds(map)
+ //        var filter = ["!=","stateAbbr",""]
+ //        map.setFilter("counties",filter)
+ //        document.getElementById("ddlCustomers").value = "Contiguous 48"
+ //        document.getElementById("ddlCustomers").id = "Contiguous 48"
+ //        d3.select("#backToNational").style("visibility","hidden")
+ //    })
     
     d3.select("#fluctuation")
     .on("click",function(){
@@ -544,20 +588,26 @@ function drawMap(data,comparisonsKeys){
              'type': 'line',
              'source': 'counties',
              'paint': {
-                 'line-color':"#000",
+                 'line-color':[
+                    'case',
+                    ['boolean', ['feature-state', 'hover'], false],
+                    "#ffffff",
+                    "#ffffff"
+                 ],
                  'line-opacity':[
                     'case',
                     ['boolean', ['feature-state', 'hover'], false],
                     1,
-                    .05
+                    1
                  ],
                  'line-width':[
                     'case',
                     ['boolean', ['feature-state', 'hover'], false],
-                    2,
+                    6,
                     1
                  ]
              },
+             
              'filter': ['==', '$type', 'Polygon']
          },"ST-OUTLINE");
                //    },"country-label");
@@ -582,6 +632,19 @@ function drawMap(data,comparisonsKeys){
         var filter = ["!=","percentage_scenario_SVI_hotspot_base_case_capacity_"+currentCapacity,-1]
          map.setFilter("counties",filter)
          map.setPaintProperty("counties", 'fill-opacity',1)
+         
+         
+            cartoGoToState(pub.startState)
+           newScatterPlot(pub.startState)
+           // map.setFilter("county-name",["==","STATEFP","06"])
+  //          map.setFilter("state-abbr",["==","STATEFP","06"])
+  //          map.setFilter("reservation-name",["==","STATE",pub.startState])
+            map.setFilter("state_mask",["==","STATEFP","a"])
+  //          map.setFilter("state_mask_outline",["==","STATEFP","06"])
+        
+            d3.selectAll(".hex").attr("opacity",0.5)
+            d3.select("."+pub.startState+"_hex").attr("opacity",1)
+         
   
      })
 
@@ -598,7 +661,7 @@ function drawMap(data,comparisonsKeys){
          var feature = e.features[0]
          map.getCanvas().style.cursor = 'pointer'; 
          if(feature["properties"].FIPS!=undefined){
-             
+           //  console.log(feature["properties"])
                  if(pub.countyHighlighted==null){
                      pub.countyHighlighted = feature["properties"]["County_FIPS"]
                  }
@@ -708,8 +771,14 @@ function drawMap(data,comparisonsKeys){
               }
          }       
          
-         map.on("mouseleave",'counties',function(){
+         map.on("mouseleave",'counties',function(e){
              d3.select("#mapPopupCompare").style("visibility","hidden")
+             
+             
+             map.setFeatureState(
+             { source: 'counties', id: hoveredStateId },
+             { hover: false }
+             );
          })  
      });
     
@@ -880,14 +949,17 @@ function PopulateDropDownList(features,map) {
           ddlCustomers.options.add(option);
       }
     }
+    
+    pub.bounds = boundsDict
+    
    $('select').on("change",function(){
       // console.log(this.value)
        if(this.value=="C48"){
         //   console.log("ok")
            zoomToBounds(map)
-          var filter = ["!=","stateAbbr"," "]
-          map.setFilter("counties",filter)
-           d3.select("#backToNational").style("visibility","hidden")
+          // var filter = ["!=","stateAbbr"," "]
+  //         map.setFilter("counties",filter)
+        //   d3.select("#backToNational").style("visibility","hidden")
            // map.flyTo({
  //               zoom:3.8,
  //               center: [-94,37],
@@ -896,7 +968,7 @@ function PopulateDropDownList(features,map) {
  //               //essential: true // this animation is considered essential with respect to prefers-reduced-motion
  //           });
        }else if(this.value=="02"){
-           d3.select("#backToNational").style("visibility","visible")
+         //  d3.select("#backToNational").style("visibility","visible")
            
            map.flyTo({
                zoom:4,
@@ -916,10 +988,90 @@ function PopulateDropDownList(features,map) {
            var currentState = state_tiger_dict[this.value]
           var filter = ["==","stateAbbr",currentState]
           map.setFilter("counties",filter)
-              d3.select("#backToNational").style("visibility","visible")
+            //  d3.select("#backToNational").style("visibility","visible")
 
        }
     })
+}
+
+function newScatterPlot(state){
+    d3.select("#comparisonPlot svg").remove()
+    var w = 150
+    var h = 150
+    var p = 40
+    var svg = d3.select("#comparisonPlot").append("svg").attr("width",w+p*2).attr("height",h+p*2)
+    var data = pub.dataByState[state]
+    
+    var xLabel = "Proportional_allocation_to_"+pub.pair.split("XXX")[0]
+    var yLabel = "Proportional_allocation_to_"+pub.pair.split("XXX")[1]
+    
+    var extentX = d3.extent(data.map(function(d){
+        return d[xLabel]
+    }))
+    var extentY = d3.extent(data.map(function(d){
+        return d[yLabel]
+    }))
+    
+    var colorStart = keyColors[pub.pair.split("XXX")[0]]
+    var colorEnd = keyColors[pub.pair.split("XXX")[1]]
+    
+    var xScale = d3.scaleLinear().domain([0,extentX[1]]).range([0,w])
+    var yScale = d3.scaleLinear().domain([0,extentY[1]]).range([0,h])
+    
+    var rangeExtent = d3.extent(data.map(function(d){return d["compare_"+pub.pair]}))
+    
+    var cScale = d3.scaleLinear().domain([rangeExtent[0],0,rangeExtent[1]]).range([colorStart,"#ddd",colorEnd])
+    
+    var tooltip = d3.select("#comparisonPlot").append("div").attr("class", "toolTip");
+    
+    
+    svg.selectAll("circle")
+    .data(data)
+    .enter()
+    .append("circle")
+    .attr("r",5)
+    .attr("cx",function(d){
+        return xScale(d[xLabel])
+    })
+    .attr("cy",function(d){
+        return h-yScale(d[yLabel])
+    })
+    .attr("fill",function(d){
+        return cScale(d["compare_"+pub.pair])
+    })
+    .style("cursor","pointer")
+    .attr("transform","translate("+p+","+p+")")
+    .on("mouseover",function(d){
+        //console.log(d)
+        var displayString = d.county+" County, "+d.stateAbbr+"<br>"
+        +xLabel+": "+d[xLabel]
+        +yLabel+": "+d[yLabel]
+        
+      tooltip
+      .style("position","absolute")
+      .style("padding","5px")
+      .style("border","1px solid black")
+      .style("background-color","rgba(255,255,255,.9)")
+        .style("left", d3.event.pageX - 50 + "px")
+        .style("top", d3.event.pageY - 80 + "px")
+        .style("visibility", "visible")
+        .html(displayString);
+        
+        
+        hoveredStateId = d["FIPS"];
+        map.setFeatureState(
+        { source: 'counties', id: hoveredStateId },
+        { hover: true }
+        );
+    })
+	.on("mouseout", function(d){ 
+        tooltip.style("visibility", "hidden");
+        map.setFeatureState(
+        { source: 'counties', id: hoveredStateId },
+        { hover: false }
+        );
+    });
+    
 }
 
 function scatterPlot(ndx,x,y,xRange){
@@ -964,6 +1116,7 @@ function onFiltered(data){
         
         var state = pub.onlyGeo[gid].properties.stateAbbr
         var county = pub.onlyGeo[gid].properties.county
+      //  console.log(county)
         // console.log(gid)
       //   console.log(pub.all.features[gid])
       //   

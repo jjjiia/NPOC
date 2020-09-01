@@ -34,6 +34,9 @@ type="text/css"
 <script src="js/jquery.mousefollow.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+
+ <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+ 
     <style>
   
     </style>
@@ -49,20 +52,23 @@ type="text/css"
 
      
 <div id="mainMenu">
-  <a href="vulnerabilities.html" class="mapMenu">Vulnerabilities</a>
+  <a href="index.html" class="mapMenu">Vulnerabilities</a>
   <a href="allocations.html" class="mapMenu">Allocations</a>
   <a href="comparisons.html" class="mapMenu"  style="font-weight:bold; background-color:gold">Comparisons</a>
   
 </div>
 <div id="byState"></div>
 <div id="nav">
-  <!-- <nav id="update" class="menu"><i>Model Last Updated on ##/##/##</i></nav> -->
-      <div id="placesMenu" >Go To: <select id="ddlCustomers"></select>
-          <!-- <div id="geocoder"></div>  -->
-         </div>
+  <div id="allocationTitle" class="menu">
+    1,000,000 workers nationwide are allocated to states according to their need(medicaid recipients?)
+  </div>
+ <div id="cartogram"></div>     
+  <!-- <nav id="update" class="menu"><i>Model Last Updated on ##/##/##</i></nav>  -->
+    <div id="placesMenu" >Go To: <select id="ddlCustomers"></select>
+   </div> 
   <div id = "strategies">
   <div id="strategiesQuestion" class="menu">
-What you choose to prioritize greatly impacts where care would be sent. 
+What you choose to prioritize greatly impacts where care would be sent within each state. 
 Click a square below to compare between two policies:
 </div>
        <!-- <nav id="strategiesQuestion" class="menu">How do you want to measure the need for Community Health Workers?</nav> -->
@@ -75,13 +81,12 @@ Click a square below to compare between two policies:
   </div>
 </div>
 
-     <div id="scatterplotResults">Results</div>     
+     <!-- <div id="scatterplotResults"></div>      -->
 
    
     <div id="map"></div>
   <div id="mapPopupCompare"></div>
 <div id = "gridHover"></div>
-  <div id="backToNational">Back to nationwide view</div>
 
 <script type="text/javascript" src="js/d3.js"></script>
 
@@ -89,6 +94,9 @@ Click a square below to compare between two policies:
 <script type="text/javascript" src="js/dc.js"></script>
 <script type="text/javascript" src="js/queue.v1.min.js"></script>
 <script type="text/javascript" src="js/radar.js"></script>
+<script type="text/javascript" src="state_names.js"></script>
+
+<script type="text/javascript" src="cartogram_comparison.js"></script>
 <script type="text/javascript" src="comparisons.js"></script>
 
 

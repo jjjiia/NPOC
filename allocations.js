@@ -297,7 +297,7 @@ function turnToDictFIPS(data,keyColumn,stateAllocations){
             newDict[key]=values
         }        
     }
-   // console.log(newDict)
+    console.log(newDict)
     return newDict
 }
 function combineGeojson(all,counties,stateAllocations){
@@ -333,6 +333,7 @@ function combineGeojson(all,counties,stateAllocations){
             }
         }
     }
+    console.log(counties)
     return counties
 }
 function drawReservations(data,map){

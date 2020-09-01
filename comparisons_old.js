@@ -35,8 +35,7 @@ var pub = {
     countyHighlighted:null,
     fluctuation:false,
     overallMaxFluctuation:0,
-    showRangeOnly:false,
-    bounds:null
+    showRangeOnly:false
 }
 var highlightColor = "#DF6D2A"
 var bghighlightColor = "gold"
@@ -122,8 +121,7 @@ var counties = d3.json("counties.geojson")
 var allData = d3.csv("County_level_proportional_allocation_for_all_policies.csv")
 var timeStamp = d3.csv("https://raw.githubusercontent.com/CenterForSpatialResearch/allocation_chw/master/Output/time_stamp.csv")
 var states = d3.json("simplestates.geojson")
-var carto= d3.json("cartogram.geojson")
-var stateAllocations = d3.csv("state_level_allocation.csv")
+
 var coverageSet = []
 var coverageDisplayText = {show_all:"Hide Coverage Info"}
 for(var c = 1; c<=8; c++){
@@ -132,9 +130,9 @@ for(var c = 1; c<=8; c++){
     coverageDisplayText[setTerm] = c*10+' CHW per 100,000 residents'
  }
 
-Promise.all([counties,countyCentroids,allData,timeStamp,states,carto,stateAllocations])
+Promise.all([counties,countyCentroids,allData,timeStamp,states])
 .then(function(data){
-    ready(data[0],data[1],data[2],data[3],data[4],data[5],data[6])
+    ready(data[0],data[1],data[2],data[3],data[4])
 })
 
 var lineOpacity = {stops:[[0,1],[100,0.3]]}
@@ -152,7 +150,7 @@ var fillColor = {
 var centroids = null
 var latestDate = null
 
-function ready(counties,centroids,modelData,timeStamp,states,carto,stateAllocations){
+function ready(counties,centroids,modelData,timeStamp,states){
     pub.states = states
     d3.select("#date").html("Model run as of "+timeStamp["columns"][1])
     var processed = turnToDictFIPS(modelData,"County_FIPS")
@@ -169,8 +167,6 @@ function ready(counties,centroids,modelData,timeStamp,states,carto,stateAllocati
     var all = ndx.groupAll();  
     scatterPlot(ndx,"Proportional_allocation_to_"+pub.pair.split("XXX")[0],"Proportional_allocation_to_"+pub.pair.split("XXX")[1],1000)
   
-  
-    cartogram(carto,stateAllocations)
   
 };
 
@@ -273,11 +269,11 @@ function combineGeojson(all,counties){
 
 function drawGrid(map,comparisonsSet){
     var drawn = []
-    var svg = d3.select("#comparisonGrid").append("svg").attr("width",290).attr("height",200)
-    var gridSize = 18
+    var svg = d3.select("#comparisonGrid").append("svg").attr("width",290).attr("height",300)
+    var gridSize = 20
     for(var i in measureSet){
             var x = i*gridSize+140
-            var y = 100
+            var y = 130
                 svg.append("text")
                 .text(measureDisplayText["Proportional_allocation_to_"+measureSet[i]])
                 .attr("x",x)
@@ -293,7 +289,7 @@ function drawGrid(map,comparisonsSet){
                 .style("font-size","12px")
                 .attr("x",i)
                 .attr("y",j*gridSize+gridSize/2)
-                .attr("transform","translate(125,105)")
+                .attr("transform","translate(125,135)")
                 .attr("text-anchor","end")
                 .attr("fill",keyColors[measureSet[j]])
             }
@@ -308,13 +304,13 @@ function drawGrid(map,comparisonsSet){
                 }
                 if(comparisonsSet.indexOf(key)>-1 && drawn.indexOf(key)==-1){
                     svg.append("rect")
-                        .attr("width",gridSize-3)
-                        .attr("height",gridSize-3)
+                        .attr("width",gridSize-4)
+                        .attr("height",gridSize-4)
                         .attr("x",gridSize*j)
                         .attr("y",gridSize*i)
                         .attr("id",key.replace("compare_",""))
                         .attr("class","grid")
-                        .attr("transform","translate(130,105)")
+                        .attr("transform","translate(130,135)")
                         .attr("cursor","pointer")
                         .on("click",function(){
                             pub.showRangeOnly = false
@@ -343,7 +339,7 @@ function drawGrid(map,comparisonsSet){
                         .attr("height",gridSize-6)
                         .attr("x",gridSize*j)
                         .attr("y",gridSize*i)
-                        .attr("transform","translate(130,105)")
+                        .attr("transform","translate(130,135)")
                         .attr("fill","none")
                         .attr("stroke","#ddd")
                     }
@@ -353,7 +349,7 @@ function drawGrid(map,comparisonsSet){
                         .attr("height",gridSize-6)
                         .attr("x",gridSize*j)
                         .attr("y",gridSize*i)
-                        .attr("transform","translate(130,105)")
+                        .attr("transform","translate(130,135)")
                         .attr("fill","none")
                         .attr("stroke","#ddd")
             }
@@ -884,9 +880,6 @@ function PopulateDropDownList(features,map) {
           ddlCustomers.options.add(option);
       }
     }
-    
-    pub.bounds = boundsDict
-    
    $('select').on("change",function(){
       // console.log(this.value)
        if(this.value=="C48"){
