@@ -633,7 +633,6 @@ function drawMap(data,comparisonsKeys){
          map.setFilter("counties",filter)
          map.setPaintProperty("counties", 'fill-opacity',1)
          
-         
             cartoGoToState(pub.startState)
            newScatterPlot(pub.startState)
            // map.setFilter("county-name",["==","STATEFP","06"])
@@ -674,6 +673,8 @@ function drawMap(data,comparisonsKeys){
                  );
                  }
                  hoveredStateId = e.features[0].id;
+                 d3.selectAll(".scatterCircle").attr("stroke","none")
+                 d3.select("#scatter_"+e.features[0].properties.FIPS).attr("stroke","black")
                  map.setFeatureState(
                  { source: 'counties', id: hoveredStateId },
                  { hover: true }
@@ -774,6 +775,7 @@ function drawMap(data,comparisonsKeys){
          map.on("mouseleave",'counties',function(e){
              d3.select("#mapPopupCompare").style("visibility","hidden")
              
+                 d3.selectAll(".scatterCircle").attr("stroke","none")
              
              map.setFeatureState(
              { source: 'counties', id: hoveredStateId },
@@ -1040,6 +1042,8 @@ function newScatterPlot(state){
         return cScale(d["compare_"+pub.pair])
     })
     .style("cursor","pointer")
+    .attr("class","scatterCircle")
+    .attr("id",function(d){return "scatter_"+d.FIPS})
     .attr("transform","translate("+p+","+p+")")
     .on("mouseover",function(d){
         //console.log(d)
