@@ -357,12 +357,12 @@ function drawMap(data,outline){
              'type': 'line',
              'source': 'counties',
              'paint': {
-                 //'line-color':"#000",
+                 'line-color':"#fff",
                  'line-opacity':[
                     'case',
                     ['boolean', ['feature-state', 'hover'], false],
                     1,
-                    .15
+                    .5
                  ],
                  'line-width':[
                     'case',
@@ -378,8 +378,7 @@ function drawMap(data,outline){
          
         // },"county_outline");         
          
-         var filter = ["!=","percentage_scenario_SVI_hotspot_base_case_capacity_30",-1]
-         map.setFilter("counties",filter)
+            map.setFilter("state_mask",["==","STATEFP","a"])
     //     console.log(map.getStyle().layers)        
          zoomToBounds(map)
          strategyMenu(map,data)
