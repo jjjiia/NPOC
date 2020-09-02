@@ -870,8 +870,10 @@ function colorByPriority(map){
     var matchString = {
     property: "Normalized_"+pub.column,
    // stops: [[0, 'rgba(19,182,163, 1)'],[.5,"#A2D352"],[1, 'rgba(255, 241, 0, 1)']]
-    stops: [[0,"#ddd"],[0.001, colors[0]],[.5,colors[1]],[1, colors[2]]]
+    stops: [[0,"#ddd"],[Math.pow(.01, 30), colors[0]],[.5,colors[1]],[1, colors[2]]]
     }
+    
+    
     
     map.setPaintProperty("counties", 'fill-color', matchString)
     drawGridWithoutCoverage(map)
@@ -893,14 +895,13 @@ function colorByWorkers(map){
 }
 
 function drawGridWithoutCoverage(map){
-    var gridHeight = 150
-    var gridWidth = 150
-    var gridSize = 30
+    var gridHeight = 220
+    var gridWidth = 220
+    var gridSize = 60
     d3.select("#colorGrid svg").remove()
     var uniSVG = d3.select("#colorGrid").append("svg").attr("width",gridWidth).attr("height",gridHeight)
     // var colorsArray =["rgba(19,182,163, 1)","rgba(162,211,82, 1)","rgba(255, 241, 0, 1)"]
     var label = []
-    var pStops = [[0,.1],[.1,.2],[.2,.3],[.3,.4],[.4,.5],[.5,.6],[.6,.7],[.7,.8],[.8,.9],[.9,1]]
     for(var ps in pStops){
         var range = pStops[ps]
         label.push(range[0]+" - "+range[1])
@@ -910,8 +911,8 @@ function drawGridWithoutCoverage(map){
     var currentFilter = null
     
     
-    uniSVG.append("text").text("high").attr("x",60).attr("y",20).attr("text-anchor","end")
-    uniSVG.append("text").text("low").attr("x",60).attr("y",130).attr("text-anchor","end")
+    uniSVG.append("text").text("high").attr("x",185).attr("y",40).attr("text-anchor","start")
+    uniSVG.append("text").text("low").attr("x",185).attr("y",195).attr("text-anchor","end")
     
     var measureDisplayTextShort = {
         percentage_scenario_high_demand:"new cases",
@@ -921,26 +922,27 @@ function drawGridWithoutCoverage(map){
         percentage_scenario_SVI_hotspot:"SVI*(new cases/pop)"
     }
 
-    uniSVG.append("text").text(pub.column).attr("x",10).attr("y",80).style("font-size","12px")
-    .attr("transform","rotate(-90 10,80)").style("font-weight","bold")
+    uniSVG.append("text").text(pub.column).attr("x",40).attr("y",110).style("font-size","12px")
+    .attr("transform","rotate(-90 40,110)").style("font-weight","bold")
     .attr("text-anchor","middle")
     
-    uniSVG.append("text").text("PRIORITY SCORE").attr("x",25).attr("y",80).style("font-size","12px")
-    .attr("transform","rotate(-90 25,80)").style("font-weight","bold")
+    uniSVG.append("text").text("PRIORITY SCORE").attr("x",60).attr("y",110).style("font-size","12px")
+    .attr("transform","rotate(-90 60,110)").style("font-weight","bold")
     .attr("text-anchor","middle")
     
     // uniSVG.append("rect").attr("width",gridSize/2).attr("height",gridSize/2).attr("x",10).attr("y",190).attr("fill","#ddd")
    //  uniSVG.append("text").attr("x",35).attr("y",204).text("Counties with no recorded cases")
    //  
+    var cScale = d3.scaleLinear().domain([0,.5,1]).range(colors)
     uniSVG.selectAll(".uniRect")
-                .data(colors)
+                .data(pStops)
                 .enter()
                 .append("rect")
-                .attr("fill",function(d){return d})
+                .attr("fill",function(d){return cScale(d[0])})
                 .attr("width",gridSize)
-                .attr("height",gridSize)
+                .attr("height",gridSize/4)
                 .attr("x",20)
-                .attr("y",function(d,i){return 155 - (i+1)*(gridSize+10)})
+                .attr("y",function(d,i){return gridHeight - (i+1)*(gridSize/4+2)})
                 .attr("transform","translate(100,-20)")
                 .attr("class","gridCell")
                 .on("mouseover",function(d,i){
@@ -988,7 +990,7 @@ function drawGridWithoutCoverage(map){
                 })
                 
     uniSVG.selectAll(".uniText")
-                .data(colors)
+                .data(pStops)
                 .enter()
                 .append("text")
                 .text(function(d,i){
@@ -996,203 +998,9 @@ function drawGridWithoutCoverage(map){
                 })
                 .attr("text-decoration","underline")
                 .attr("x",20)
-                .attr("y",function(d,i){return 135 - i*(gridSize+10)})
+                .attr("y",function(d,i){return gridHeight- i*(gridSize/4+2)-5})
                 .attr("text-anchor","end")
                 .attr("transform","translate(95,-20)")
-}
-function drawGrid(map,data){
-    d3.select("#colorGrid svg").remove()
-    var currentFilter = null
-
-    var domainC = []
-    for(var g =0; g<colorGroups.length; g++){
-        domainC.push("_"+g)
-    }
-
-    var histo = d3.histogram()
-    .value(function(d){
-        if(d.properties[pub.strategy+"_"+pub.coverage+"_group"]==undefined){
-            return 999
-        }else{
-            return d.properties[pub.strategy+"_"+pub.coverage+"_group"].replace("_","")
-        }
-    })
-    .domain([1,10])
-    .thresholds(9)
-
-    var bins = histo(data.features)
-    pub.histo = bins
-
-    var gridHeight = 250
-    var gridWidth = 220
-    var colorGridSvg = d3.select("#colorGrid").append("svg").attr("width",gridWidth).attr("height",gridHeight)
-    var gridSize = 40
-    var rScale = d3.scaleLinear().domain([0,800]).range([10,gridSize-5])
-
-    colorGridSvg.append("rect").attr("width",gridSize/2).attr("height",gridSize/2).attr("x",10).attr("y",190).attr("fill","#ddd")
-    colorGridSvg.append("text").attr("x",35).attr("y",204).text("Counties with no recorded cases")
-
-    var clicked = false
-
-    colorGridSvg
-    .selectAll(".grid")
-    .data(colorGroups)
-    .enter()
-    .append("rect")
-    .attr("class",function(d,i){
-        var cClass = i%3
-        var mClass = Math.floor(i/3)
-        return "c_"+cClass+" "+"m_"+mClass+" gridCell"
-    })
-    .attr("x",function(d,i){
-        return i%3*(gridSize)
-    })
-    .attr("y",function(d,i){
-        return 150-Math.floor(i/3+1)*(gridSize)//-rScale(bins[i].length)+gridSize/2
-    })
-    .attr("width",function(d,i){
-        return gridSize//-20
-    })
-    .attr("height",function(d,i){
-        return gridSize
-    })
-    .attr('fill',function(d){return d})
-    .attr("transform","translate(100,-20)")
-    .attr("cursor","pointer")
-    .on("mouseover",function(d,i){
-        var groupName = "_"+(i+1)            
-        var filter = ["==",pub.strategy+"_"+pub.coverage+"_group",groupName]
-        map.setFilter("counties",filter)
-        d3.selectAll(".gridCell").attr("opacity",.3)
-        d3.select(this).attr("opacity",1)
-
-        var x = event.clientX;     // Get the horizontal coordinate
-        var y = event.clientY;             
-        d3.select("#gridHover").style("visibility","visible")
-        var gP = ["low","med","high"][Math.floor((i)/3)]
-        var gC = ["low","med","high"][i%3]
-        d3.select("#gridHover").html(pub.histo[i].length+ " counties have "+ gP+" priority and "+gC+" unmet need")
-        //   console.log("over")
-    })
-    .on("mouseout",function(d,i){
-        d3.selectAll(".gridCell").attr("opacity",1)
-        d3.select("#gridHover").style("visibility","hidden")
-
-        if(clicked == false){
-            currentFilter = ["!=","percentage_scenario_SVI_hotspot_base_case_capacity_30",-1]
-            map.setFilter("counties",currentFilter)
-        }else{
-            map.setFilter("counties",currentFilter)
-        }
-    })
-    .on("click",function(d,i){
-        var groupName = "_"+(i+1)            
-        var filter = ["==",pub.strategy+"_"+pub.coverage+"_group",groupName]
-
-        if(JSON.stringify(filter) == JSON.stringify(currentFilter)){
-            d3.select(this).attr("stroke","none")
-            currentFilter = null
-            map.setFilter("counties",currentFilter)
-            clicked = false
-        }else{
-            map.setFilter("counties",filter)
-            currentFilter = filter
-            d3.selectAll(".gridCell").attr("stroke","none")
-            d3.select(this).attr("stroke","#000")
-            clicked = true
-        }
-    })
-    
-    colorGridSvg.append("text").text("% OF UNMET NEED").attr("x",105).attr("y",180).style("font-weight","bold").style("font-size","12px")
-    colorGridSvg.append("text").text("less").attr("x",100).attr("y",160)
-    colorGridSvg.append("text").text("more").attr("x",190).attr("y",160)
-
-    colorGridSvg.append("text").text("high").attr("x",60).attr("y",20).attr("text-anchor","end")
-    colorGridSvg.append("text").text("low").attr("x",60).attr("y",130).attr("text-anchor","end")
-
-    var measureDisplayTextShort = {
-        percentage_scenario_high_demand:"new cases",
-        percentage_scenario_SVI_high_demand:"SVI*new cases",
-        percentage_scenario_hotspot:"new cases/pop",
-        percentage_scenario_SVI_pop:"SVI*pop",
-        percentage_scenario_SVI_hotspot:"SVI*(new cases/pop)"
-    }
-
-    colorGridSvg.append("text").text(measureDisplayTextShort[pub.strategy].toUpperCase()).attr("x",10).attr("y",80).style("font-size","12px")
-    .attr("transform","rotate(-90 10,80)").style("font-weight","bold")
-    .attr("text-anchor","middle")
-    
-    colorGridSvg.append("text").text("PRIORITY SCORE").attr("x",25).attr("y",80).style("font-size","12px")
-    .attr("transform","rotate(-90 25,80)").style("font-weight","bold")
-    .attr("text-anchor","middle")
-
-
-    var degree = ["low","med","high"]
-    colorGridSvg
-        .selectAll(".gridDegreeX")
-        .data(degree)
-        .enter()
-        .append('text')
-        .text(function(d,i){return cStops[i].join("-");})
-        .attr("x",function(d,i){return i*gridSize+gridSize/2})
-        .attr("y",140)
-        .attr("column",function(d,i){return i})
-        .attr("cursor","pointer")
-        .attr("text-anchor","middle")
-        .attr("text-decoration","underline")
-        .attr("transform","translate(100,0)")
-        .on("mouseover",function(d,i){
-            var column = d3.select(this).attr("column")
-            d3.selectAll(".gridCell").attr("opacity",.3)
-            d3.selectAll(".c_"+column).attr("opacity",1)
-            var groupName = "_"+i            
-            var filter = ["==",pub.strategy+"_"+pub.coverage+"_group",groupName]
-            map.setFilter("counties",filter)
-            var ids = map.querySourceFeatures("counties",  { filter:filter} )
-        })
-        .on("mouseout",function(d,i){
-            d3.selectAll(".gridCell").attr("opacity",1)
-            if(clicked == false){
-                var filter = null
-                map.setFilter("counties",filter)
-            }else{
-                map.setFilter("counties",currentFilter)
-            }
-        })
-
-    colorGridSvg
-        .selectAll(".gridDegreeX")
-        .data(degree)
-        .enter()
-        .append('text')
-        .text(function(d,i){return pStops[i].join(" - "); return d})
-        .attr("y",function(d,i){return 130-i*gridSize+5})
-        .attr("text-decoration","underline")
-        .attr("x",0)
-        .attr("row",function(d,i){
-            return i
-        })
-        .attr("text-anchor","end")
-        .attr("transform","translate(95,-20)")
-        .attr("cursor","pointer")
-        .on("mouseover",function(d,i){
-            var row = d3.select(this).attr('row')
-            d3.selectAll(".gridCell").attr("opacity",.3)
-            d3.selectAll(".m_"+row).attr("opacity",1)
-            var groupName = "_"+i            
-            var filter = ["==",pub.strategy.replace("percentage_scenario_","")+"_group",groupName]
-            map.setFilter("counties",filter)
-        })
-        .on("mouseout",function(d,i){
-            d3.selectAll(".gridCell").attr("opacity",1)
-            if(clicked == false){
-                    var filter = null
-                    map.setFilter("counties",filter)
-            }else{
-                    map.setFilter("counties",currentFilter)
-            }
-        })
-    
 }
 function formatSearch(item) {
     var selectionText = item.text.split("|");
