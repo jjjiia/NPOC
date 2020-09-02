@@ -951,7 +951,7 @@ function colorByPriority(map){
     var matchString = {
     property: "percentAllocated_"+pub.column,
 //    stops: [[0, colors[0]],[allocationMaxs[pub.column]/2,colors[1]],[allocationMaxs[pub.column], colors[2]]]
-    stops: [[0, colors[0]],[midPoint,colors[1]],[max, colors[2]]]
+    stops: [[0,"#ddd"],[0.001, colors[0]],[midPoint,colors[1]],[max, colors[2]]]
     }
     map.setPaintProperty("counties", 'fill-color', matchString)
     drawGridWithoutCoverage(map)

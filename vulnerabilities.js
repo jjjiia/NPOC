@@ -38,7 +38,7 @@ var outlineColor = "#DF6D2A"
 
 var colors = ["#10B6A3","#A2D352","#FFF100"]
 //var colors = ["#E0ECF4","#9EBCDA","#8856A7"]
-var pStops = [[0,.34],[.34,.67],[.67,1]]
+var pStops = [[0,.1],[.1,.2],[.2,.3],[.3,.4],[.4,.5],[.5,.6],[.6,.7],[.7,.8],[.8,.9],[.9,1]]
 var cStops = [[0,34],[34,67],[67,100]]
 
 /*
@@ -870,7 +870,7 @@ function colorByPriority(map){
     var matchString = {
     property: "Normalized_"+pub.column,
    // stops: [[0, 'rgba(19,182,163, 1)'],[.5,"#A2D352"],[1, 'rgba(255, 241, 0, 1)']]
-    stops: [[0, colors[0]],[.5,colors[1]],[1, colors[2]]]
+    stops: [[0,"#ddd"],[0.001, colors[0]],[.5,colors[1]],[1, colors[2]]]
     }
     
     map.setPaintProperty("counties", 'fill-color', matchString)
@@ -899,7 +899,13 @@ function drawGridWithoutCoverage(map){
     d3.select("#colorGrid svg").remove()
     var uniSVG = d3.select("#colorGrid").append("svg").attr("width",gridWidth).attr("height",gridHeight)
     // var colorsArray =["rgba(19,182,163, 1)","rgba(162,211,82, 1)","rgba(255, 241, 0, 1)"]
-    var label = ["0 - 0.34","0.34 - 0.67","0.67 - 1"]
+    var label = []
+    var pStops = [[0,.1],[.1,.2],[.2,.3],[.3,.4],[.4,.5],[.5,.6],[.6,.7],[.7,.8],[.8,.9],[.9,1]]
+    for(var ps in pStops){
+        var range = pStops[ps]
+        label.push(range[0]+" - "+range[1])
+        
+    }
     var clicked = false
     var currentFilter = null
     
