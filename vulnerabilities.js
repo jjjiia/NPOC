@@ -912,7 +912,7 @@ function drawGridWithoutCoverage(map){
     
     
     uniSVG.append("text").text("high").attr("x",185).attr("y",40).attr("text-anchor","start")
-    uniSVG.append("text").text("low").attr("x",185).attr("y",195).attr("text-anchor","end")
+    uniSVG.append("text").text("low").attr("x",185).attr("y",195).attr("text-anchor","start")
     
     var measureDisplayTextShort = {
         percentage_scenario_high_demand:"new cases",
