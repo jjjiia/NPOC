@@ -333,6 +333,7 @@ select{
      border-bottom:1px solid #ddd;
      
  }
+
  #mainMenu{
      position:fixed;
      left:0px;
@@ -348,15 +349,18 @@ select{
  }
  .mapMenu{
      padding:5px;
-     margin-left:-5px;
+     margin-left:-5px;/*
      border-right:1px solid #000;
-     border-left:1px solid #000;
+     border-left:1px solid #000;*/
      height:20px;
-     width:32%;
+     width:24%;
      color:#000;
      background-color:#fff;
      display:inline-block;
      text-align:center;
+ }
+ #about{
+     border:none;
  }
  #geocoder{width:30px;}
  #scatterplotResults{
