@@ -1003,7 +1003,7 @@ function newScatterPlot(state){
     var w = 150
     var h = 150
     var p = 40
-    var svg = d3.select("#comparisonPlot").append("svg").attr("width",w+p*2).attr("height",h+p*2)
+    var svg = d3.select("#comparisonPlot").append("svg").attr("width",w+p*3).attr("height",h+p*3)
     var data = pub.dataByState[state]
     
     var xLabel = "Proportional_allocation_to_"+pub.pair.split("XXX")[0]
@@ -1020,7 +1020,7 @@ function newScatterPlot(state){
     var colorEnd = keyColors[pub.pair.split("XXX")[1]]
     
     var xScale = d3.scaleLinear().domain([0,extentX[1]]).range([0,w])
-    var yScale = d3.scaleLinear().domain([0,extentY[1]]).range([0,h])
+    var yScale = d3.scaleLinear().domain([0,extentY[1]]).range([h,0])
     
     var rangeExtent = d3.extent(data.map(function(d){return d["compare_"+pub.pair]}))
     
@@ -1028,6 +1028,30 @@ function newScatterPlot(state){
     
     var tooltip = d3.select("#comparisonPlot").append("div").attr("class", "toolTip");
     
+    svg.append("text").text("CHWs assigned by "+measureDisplayText[xLabel]).attr("x",(w)/2+p*2).attr("y",h+p*2.5)
+    .attr("text-anchor","middle")
+    
+    var yLabelX = p/2
+    var yLabelY=h/2+p
+    svg.append("text").text("CHWs assigned by "+measureDisplayText[yLabel]).attr("x",yLabelX).attr("y",yLabelY)
+    .attr("transform","rotate(-90,"+yLabelX+","+yLabelY+")").attr("text-anchor","middle")
+    
+    svg.append("text").text("less").attr("x",p*2).attr("y",h+p*1.8).attr("text-anchor","start").style("font-style","italic").style("font-weight","bold")
+    svg.append("text").text("more").attr("x",w+p*2).attr("y",h+p*1.8).attr("text-anchor","end").style("font-style","italic").style("font-weight","bold")
+    
+    
+    svg.append("text").text("less").attr("x",p-10).attr("y",h+p).attr("text-anchor","start").style("font-style","italic").style("font-weight","bold")
+    svg.append("text").text("more").attr("x",p-10).attr("y",p+10).attr("text-anchor","start").style("font-style","italic").style("font-weight","bold")
+    
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(d3.axisLeft(yScale).ticks(4))
+        .attr("transform","translate("+p*2+","+p+")")
+    
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate("+p*2+"," + (h+p) + ")")
+        .call(d3.axisBottom(xScale).ticks(2));
     
     svg.selectAll("circle")
     .data(data)
@@ -1038,7 +1062,7 @@ function newScatterPlot(state){
         return xScale(d[xLabel])
     })
     .attr("cy",function(d){
-        return h-yScale(d[yLabel])
+        return yScale(d[yLabel])
     })
     .attr("fill",function(d){
         return cScale(d["compare_"+pub.pair])
@@ -1046,7 +1070,7 @@ function newScatterPlot(state){
     .style("cursor","pointer")
     .attr("class","scatterCircle")
     .attr("id",function(d){return "scatter_"+d.FIPS})
-    .attr("transform","translate("+p+","+p+")")
+    .attr("transform","translate("+p*2+","+p+")")
     .on("mouseover",function(d){
         //console.log(d)
         var displayString = d.county+" County, "+d.stateAbbr+"<br>"
