@@ -79,7 +79,9 @@ var keyColors = {
     YPLL:"#A2D352",
     Unemployment:"#17DCFF",
     Covid_capita:"#7E6EFF",
-    Covid_death_capita:"#E400FF"    
+    Covid_death_capita:"#E400FF",
+    Medicaid_capita:"red",    
+     Covid:"green"
 }
 
 
@@ -87,11 +89,11 @@ var keyColors = {
 
  var measureSet = [
     // "medicaid_demand",
-     // "Medicaid_capita",
+      "Medicaid_capita",
      "SVI",
      "YPLL",
      "Unemployment",
-   // "Covid",
+    "Covid",
      "Covid_capita",
      "Covid_death_capita"
 ]
@@ -304,11 +306,11 @@ function combineGeojson(all,counties){
 
 function drawGrid(map,comparisonsSet){
     var drawn = []
-    var svg = d3.select("#comparisonGrid").append("svg").attr("width",290).attr("height",200)
+    var svg = d3.select("#comparisonGrid").append("svg").attr("width",290).attr("height",250)
     var gridSize = 18
     for(var i in measureSet){
             var x = i*gridSize+140
-            var y = 100
+            var y = 110
                 svg.append("text")
                 .text(measureDisplayText["Proportional_allocation_to_"+measureSet[i]])
                 .attr("x",x)
@@ -324,7 +326,7 @@ function drawGrid(map,comparisonsSet){
                 .style("font-size","12px")
                 .attr("x",i)
                 .attr("y",j*gridSize+gridSize/2)
-                .attr("transform","translate(125,105)")
+                .attr("transform","translate(125,115)")
                 .attr("text-anchor","end")
                 .attr("fill",keyColors[measureSet[j]])
             }
@@ -345,7 +347,7 @@ function drawGrid(map,comparisonsSet){
                         .attr("y",gridSize*i)
                         .attr("id",key.replace("compare_",""))
                         .attr("class","grid")
-                        .attr("transform","translate(130,105)")
+                        .attr("transform","translate(130,115)")
                         .attr("cursor","pointer")
                         .on("click",function(){
                           //  console.log("grid click")
@@ -376,7 +378,7 @@ function drawGrid(map,comparisonsSet){
                         .attr("height",gridSize-6)
                         .attr("x",gridSize*j)
                         .attr("y",gridSize*i)
-                        .attr("transform","translate(130,105)")
+                        .attr("transform","translate(130,115)")
                         .attr("fill","none")
                         .attr("stroke","#ddd")
                     }
@@ -386,7 +388,7 @@ function drawGrid(map,comparisonsSet){
                         .attr("height",gridSize-6)
                         .attr("x",gridSize*j)
                         .attr("y",gridSize*i)
-                        .attr("transform","translate(130,105)")
+                        .attr("transform","translate(130,115)")
                         .attr("fill","none")
                         .attr("stroke","#ddd")
             }
