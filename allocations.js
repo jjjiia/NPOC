@@ -30,7 +30,7 @@ var pub = {
     SVIFIPS:null,
     sviZoom:10,
     SVIcenter:null,
-    column:"Proportional_allocation_to_Medicaid_capita",
+    column:"Proportional_allocation_to_Covid",
     min:999,
     max:0,
     maxAllocationByPop:0,
@@ -193,29 +193,12 @@ function ready(counties,outline,centroids,modelData,timeStamp,states,carto,state
         for(var i in combinedGeojson.features){
             formattedData.push(combinedGeojson.features[i].properties)
         }
-        // d3.select('#download')
-    //         .attr("cursor","pointer")
-    //         .on('click', function() {
-    //             var data = formattedData
-    //             var today = new Date();
-    //             var dd = String(today.getDate()).padStart(2, '0');
-    //             var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-    //             var yyyy = today.getFullYear();
-    //
-    //             today = mm + '_' + dd + '_' + yyyy;
-    //
-    //             var blob = new Blob([d3.csvFormat(data)], {type: "text/csv;charset=utf-8"});
-    //             saveAs(blob, "politics_of_care_data_"+today+".csv");
-    //         });
-    //
-    //    
-    
     cartogram(carto,stateAllocations)
     pub.stateAllocations = stateAllocations
         //drawHistogram(pub.strategy,pub.coverage)
     map.once("idle",function(){
         colorByPriority(map)
-        //colorByWorkers(map)
+        d3.select("#"+pub.column).style("background-color",highlightColor)
     })
     
     d3.select("#univar").on("click",function(){
@@ -333,7 +316,7 @@ function combineGeojson(all,counties,stateAllocations){
             }
         }
     }
-    console.log(counties)
+    //console.log(counties)
     return counties
 }
 function drawReservations(data,map){
@@ -398,7 +381,7 @@ function drawMap(data,outline){
 
         map.resize();
 
-    map.addControl(new mapboxgl.NavigationControl(),'top-right');
+        map.addControl(new mapboxgl.NavigationControl(),'bottom-right');
     map.dragRotate.disable();
     map.addSource("counties",{
              "type":"geojson",
@@ -887,8 +870,6 @@ function drawKey(demandType){
 }
 
 function strategyMenu(map,data){
-    
-    //var svg = d3.select("#strategiesMenu").append("svg").attr("width",220).attr("height",220)
     var gridSize = 70
     
      var clickedId = "Covid_capita"
@@ -899,41 +880,17 @@ function strategyMenu(map,data){
              .attr("id",id)
              .html(measureDisplayText[id])
              .attr("class","measures")
-             .attr("fill",function(){
-                 if(id =="percentage_scenario_SVI_hotspot"){
-                     return "black"
-                 }else{
-                     return "#fff"
-                 }
-             })
              .attr("cursor","pointer")
              .attr("stroke","black")
              .style("cursor","pointer")
              .on("click",function(){
-                        // var filter = ["!=","percentage_scenario_SVI_hotspot_base_case_capacity_30",-1]
-                        // d3.selectAll(".measureGrid").attr("fill","white")
-                       //  d3.select(this).attr("fill","black")
-                        // map.setFilter("counties",filter)
                          clickedId = d3.select(this).attr("id")
                          pub.column = clickedId
                          d3.selectAll(".measures").style("background-color","white").style("color","#000")
-            
-                         d3.selectAll("#"+clickedId).style("color","#fff").style("background-color","#000")
                          d3.selectAll("#"+clickedId).style("background-color",highlightColor)
-          
                          colorByPriority(map)
-                         // if(pub.univar==true){
- //                             //drawGridWithoutCoverage(map)
- //                             colorByWorkers(map)
- //                         }else{
- //                             colorByPriority(map)
- //                             //drawGrid(map,pub.all)
- //                         }
- //                         pub.histo = histo(pub.all)
                      })
-           
          }
-       
      }
      d3.selectAll(".measureGridLabel").style("font-size","12px")
 }
@@ -1264,7 +1221,7 @@ function zoomToBounds(mapS){
     //https://docs.mapbox.com/mapbox-gl-js/example/zoomto-linestring/
     var bounds =  new mapboxgl.LngLatBounds([-155, 20], 
         [-55, 55]);
-    map.fitBounds(bounds,{padding:20},{bearing:0})
+    map.fitBounds(bounds,{padding:40},{bearing:0})
 }
 function getMaxMin(coords){
     var maxLat = -999

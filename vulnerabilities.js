@@ -29,7 +29,7 @@ var pub = {
     SVIFIPS:null,
     sviZoom:10,
     SVIcenter:null,
-    column:"Covid_capita"
+    column:"Covid"
 }
 var highlightColor = "gold"
 var bghighlightColor = "gold"
@@ -197,7 +197,7 @@ function ready(counties,outline,centroids,modelData,timeStamp,states){
         //drawHistogram(pub.strategy,pub.coverage)
     map.once("idle",function(){
         colorByPriority(map)
-        //colorByWorkers(map)
+        d3.select("#"+pub.column).style("background-color",highlightColor)
     })
     
     d3.select("#univar").on("click",function(){
@@ -310,10 +310,10 @@ function drawMap(data,outline){
           .style("height",window.innerHeight+"px")
     mapboxgl.accessToken = "pk.eyJ1IjoiYzRzci1nc2FwcCIsImEiOiJja2J0ajRtNzMwOHBnMnNvNnM3Ymw5MnJzIn0.fsTNczOFZG8Ik3EtO9LdNQ"//new account
     var maxBounds = [
-    [-190,8], // Southwest coordinates
-    [-20, 74] // Northeast coordinates
+    [-165,6], // Southwest coordinates
+    [-15, 70] // Northeast coordinates
     ];
-   var bounds = [[-130, 26], 
+   var bounds = [[-120, 26], 
         [-40, 50]
     ]
     map = new mapboxgl.Map({
@@ -333,7 +333,7 @@ function drawMap(data,outline){
 
         map.resize();
 
-    map.addControl(new mapboxgl.NavigationControl(),'top-right');
+    map.addControl(new mapboxgl.NavigationControl(),'bottom-right');
     map.dragRotate.disable();
     map.addSource("counties",{
              "type":"geojson",

@@ -167,7 +167,7 @@ function cartoGoToState(state){
     
     d3.select("#stateKey").html("")
     d3.select("#stateKey").append("div").attr("id","keyHeader").html("% of state workers allocated to each county")
-    d3.select("#stateKey").append("div").attr("id","keyRangeMin").html("0%").style("display","inline-block").style("padding","5px")
+    d3.select("#stateKey").append("div").attr("id","keyRangeMin").html(">0%").style("display","inline-block").style("padding","5px")
     d3.select("#stateKey").append("div").attr("id","keyRangeGradient")
           .style("width","150px").style("height","10px")
       .style("background-image","linear-gradient(to right, "+colors[0]+" , "+colors[1]+","+colors[2]+")")

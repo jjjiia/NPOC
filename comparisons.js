@@ -575,7 +575,7 @@ function drawMap(data,comparisonsKeys){
     
      map.on("load",function(){                 
          zoomToBounds(map)
-         map.addControl(new mapboxgl.NavigationControl(),'top-right');
+         map.addControl(new mapboxgl.NavigationControl(),'bottom-right');
          
          //map.setLayoutProperty("mapbox-satellite", 'visibility', 'none');
          map.addSource("counties",{
@@ -881,7 +881,7 @@ function zoomToBounds(mapS){
     //https://docs.mapbox.com/mapbox-gl-js/example/zoomto-linestring/
     var bounds =  new mapboxgl.LngLatBounds([-155, 20], 
         [-55, 55]);
-    map.fitBounds(bounds,{padding:20},{bearing:0})
+    map.fitBounds(bounds,{padding:40},{bearing:0})
 }
 
 function getMaxMin(coords){
