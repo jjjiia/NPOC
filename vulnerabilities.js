@@ -99,7 +99,7 @@ var timeStamp = d3.csv("https://raw.githubusercontent.com/CenterForSpatialResear
 var states = d3.json("simplestates.geojson")
 
  var measureSet = [
-     "Medicaid_capita",
+     "Medicaid_demand",
      "SVI",
      "YPLL",
      "Unemployment",
@@ -111,7 +111,7 @@ var states = d3.json("simplestates.geojson")
 
 
 var measureDisplayText = {
-     Medicaid:"MEDICAID",
+     Medicaid_demand:"MEDICAID",
      SVI:"SOCIAL VULNERALBILITY INDEX",
      YPLL:"YEARS OF POTENTIAL LIFE LOST",
      Unemployment:"UNEMPLOYMENT",
@@ -122,7 +122,7 @@ var measureDisplayText = {
 }
 
 var measureDisplayTextPop={
-     Medicaid_capita:"Medicaid",
+     Medicaid_demand:"Medicaid",
      SVI:"Social Vulneralbility Index",
      YPLL:"Years of Potential Life Lost",
      Unemployment:"Unemployment",
@@ -478,11 +478,17 @@ function drawMap(data,outline){
              var currentGroup = feature.properties[currentSelection +"_group"]
              
              var currentGroupDescription = groupLabels[currentGroup]
+             
+             var roundedValue = Math.round(feature.properties["Normalized_"+pub.column]*100)/100
+             if(roundedValue==0){
+                 roundedValue = Math.round(feature.properties["Normalized_"+pub.column]*10000)/10000
+             }
+             
              var displayString = "<span class=\"popupTitle\">"+countyName+"</span><br>"
                      +"Population: "+numberWithCommas(population)+"<br>"
                      +"<strong>"+measureDisplayTextPop[pub.column]+":</strong> "+feature.properties[pub.column]+"<br>"+"<br>"
                      +"<strong>Priority score by "+measureDisplayTextPop[pub.column]+":</strong> "
-                     +Math.round(feature.properties["Normalized_"+pub.column]*100)/100+"<br>"
+                     +roundedValue+"<br>"
                      +"<br>"
                  
              var needsMetString = currentSelectionCoverage+"% of needs met</strong>"
@@ -1372,80 +1378,6 @@ function filterMap(gids){
   //  console.log(gids)
   var filter = ['in',["get",'FIPS'],["literal",gids]];
 	map.setFilter("counties",filter)
-}
-function covidBarChart(column,ndx,height,width){
-    var max = 0
-    var min = 0
-
-    var columnDimension = ndx.dimension(function (d) {
-        if(parseFloat(d[column])>max){
-            max = d[column]
-        }
-        if(column=="covid_casesPer100000"){
-            return d[column]
-        }
-         if(d[column]!=-999){
-            return Math.round(d[column]*100)/100;
-        }    
-    });
-  
-
-    var columnGroup = columnDimension.group();
-        
-    var divName = column.split("_")[1]
-    
-    var color = colors[divName]
-    
-    var barDiv = d3.select("#"+divName).append("div").attr("id",column).style("width",width+"px").style("height",(height+30)+"px")
-    
-    d3.select("#"+column).append("text").attr("class","reset")
-        .on("click",function(){
-            chart.filterAll();
-            dc.redrawAll();
-        })
-        .style("display","none")
-        .text("reset")
-        .attr("cursor","pointer")
-    
-    barDiv.append("span").attr("class","reset")
-    barDiv.append("span").attr("class","filter")
-
-    var chart = dc.barChart("#"+column);
-    chart.on("filtered",function(){
-        onFiltered(columnDimension.top(Infinity))
-    })
-    
-    d3.select("#"+column).append("div").attr("class","chartName").html(themesDefinitions[column]).style("color",color)
-    d3.select("#"+divName).style("color",color)
-    max = max+1
-    chart.elasticY(false)
-    chart.y(d3.scale.pow().domain([0,100]))
-    
-    chart.width(width)
-            .height(height)
-            .margins({top: 10, right: 20, bottom: 30, left: 40})
-            .dimension(columnDimension)
-            .group(columnGroup)
-          // .centerBar(true)
-            .gap(0)
-            //.elasticY(true)
-            .xUnits(function(){return Math.abs(Math.round(max-min))*100;})
-            .x(d3.scale.linear().domain([min,max]))
-            .xAxis()
-            .ticks(10)
-
-            chart.colorAccessor(function (d, i){return d.value;})
-            .colors(d3.scale.linear().domain([0,10]).range(["rgba(255,0,0,.1)",'rgba(255,0,0,.5)']))
-      
-        
-        chart.yAxis()
-            .ticks(0);
-      chart.on("preRedraw", function (chart) {
-          chart.rescale();
-      });
-      chart.on("preRender", function (chart) {
-          chart.rescale();
-      });		
 }
 function barChart(divName, column,ndx,height,width){
     var max = 0
