@@ -233,7 +233,7 @@ function turnToDictFIPS(data,keyColumn){
             // var values = data[i]
             for(var j in measureSet){
                 var k1 = ("Proportional_allocation_to_"+measureSet[j])
-                var v1 = Math.floor(parseFloat(data[i][k1]))
+                var v1 = Math.ceil(parseFloat(data[i][k1]))
                 
                 if(v1>max){max = v1; maxKey = k1;}
                 if(v1<min){min = v1; minKey = k1;}
@@ -241,7 +241,7 @@ function turnToDictFIPS(data,keyColumn){
                 newDict[key][k1]=v1
                 for(var k in measureSet){
                     var k2 =("Proportional_allocation_to_"+measureSet[k])
-                    var v2 = Math.floor(parseFloat(data[i][k2]))
+                    var v2 = Math.ceil(parseFloat(data[i][k2]))
                     var index1 = j
                     var index2 = k
                     if(index1!=index2){
@@ -702,9 +702,9 @@ var maxBounds = [
                  var geometry = feature["geometry"]
                  var countyId = feature["properties"]["FIPS"]
                  var key1 = "Proportional_allocation_to_"+pub.pair.split("XXX")[0]
-                 var value1 = Math.floor(parseFloat(feature["properties"][key1]))
+                 var value1 = Math.ceil(parseFloat(feature["properties"][key1]))
                  var key2 = "Proportional_allocation_to_"+pub.pair.split("XXX")[1]
-                 var value2 = Math.floor(parseFloat(feature["properties"][key2]))
+                 var value2 = Math.ceil(parseFloat(feature["properties"][key2]))
                  var dif = Math.abs(value1-value2)
                  
                  var comparisonString = ""
