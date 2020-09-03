@@ -10,7 +10,7 @@ function cartogram(data,stateAllocations){
   var height = 160
   var svg = d3.select("#cartogram").append("svg").attr("width",width).attr("height",height)
   // Map and projection
-  var projection = d3.geoMercator().scale(220).translate([540, 260]);
+    var projection = d3.geoMercator().scale(208).translate([540, 240]);
 formatState(stateAllocations)
     var colorsArray =["#17DCFF","#7E6EFF","#E400FF"]
   var tooltip = d3.select("#nav").append("div").attr("class", "toolTip");

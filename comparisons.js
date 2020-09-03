@@ -998,8 +998,8 @@ function PopulateDropDownList(features,map) {
 
 function newScatterPlot(state){
     d3.select("#comparisonPlot svg").remove()
-    var w = 150
-    var h = 150
+    var w = 140
+    var h = 140
     var p = 40
     var svg = d3.select("#comparisonPlot").append("svg").attr("width",w+p*3).attr("height",h+p*3)
     var data = pub.dataByState[state]
