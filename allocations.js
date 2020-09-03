@@ -123,7 +123,7 @@ var states = d3.json("simplestates.geojson")
 var carto= d3.json("cartogram.geojson")
 var stateAllocations = d3.csv("state_level_allocation.csv")
  var measureSet = [
-     "Proportional_allocation_to_Medicaid_capita",
+     "Proportional_allocation_to_Medicaid",
      "Proportional_allocation_to_SVI",
      "Proportional_allocation_to_YPLL",
      "Proportional_allocation_to_Unemployment",
@@ -135,7 +135,7 @@ var stateAllocations = d3.csv("state_level_allocation.csv")
 
 
 var measureDisplayText = {
-     Proportional_allocation_to_Medicaid_capita:"MEDICAID",
+     Proportional_allocation_to_Medicaid:"MEDICAID",
      Proportional_allocation_to_SVI:"SOCIAL VULNERALBILITY INDEX",
      Proportional_allocation_to_YPLL:"YEARS OF POTENTIAL LIFE LOST",
      Proportional_allocation_to_Unemployment:"UNEMPLOYMENT",

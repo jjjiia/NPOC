@@ -111,7 +111,7 @@ var states = d3.json("simplestates.geojson")
 
 
 var measureDisplayText = {
-     Medicaid_capita:"MEDICAID",
+     Medicaid:"MEDICAID",
      SVI:"SOCIAL VULNERALBILITY INDEX",
      YPLL:"YEARS OF POTENTIAL LIFE LOST",
      Unemployment:"UNEMPLOYMENT",
@@ -413,10 +413,6 @@ function drawMap(data,outline){
         pub.sviZoom = 10
         pub.SVIcenter = pub.centroids[feature.properties["FIPS"]]
         
-       // window.open("sviMap.html", "_blank"); 
-        
-  //      d3.select("#SVIMap").style("display","block")
-    //    d3.select("#SVIText").html("SVI Census Tract Level Map TEMPORARY<br><br>COUNTY: "+pub.SVIFIPS+"<br>Id vel atqui commodo bonorum. Sit eu menandri percipitur adversarium, quis error nostrud an sea, cu paulo mundi his. Vel ut iusto omittam temporibus, sea nullam tamquam periculis ea. Te cum brute malorum praesent, eu sed vero omittam consulatu, usu illum deserunt no.")
         
     })
      map.on('mousemove', 'counties', function(e) {
@@ -485,8 +481,8 @@ function drawMap(data,outline){
              var displayString = "<span class=\"popupTitle\">"+countyName+"</span><br>"
                      +"Population: "+numberWithCommas(population)+"<br>"
                      +"<strong>"+measureDisplayTextPop[pub.column]+":</strong> "+feature.properties[pub.column]+"<br>"+"<br>"
-                 +"<span style=\"color:red\"><strong>"+groupLabels[feature.properties["group_"+pub.column]]+"</strong></span><br>"
-                     +"<strong>Priority score by "+measureDisplayTextPop[pub.column]+":</strong> "+feature.properties["Normalized_"+pub.column]+"<br>"
+                     +"<strong>Priority score by "+measureDisplayTextPop[pub.column]+":</strong> "
+                     +Math.round(feature.properties["Normalized_"+pub.column]*100)/100+"<br>"
                      +"<br>"
                  
              var needsMetString = currentSelectionCoverage+"% of needs met</strong>"
@@ -755,58 +751,7 @@ function drawHistogram(strategy){
     }
 }
 
-function drawKey(demandType){
-    
-    d3.selectAll("#keySvg").remove()
-    var color = colors[demandType]
-    var svg = d3.select("#key").append("svg").attr("width",350).attr("height",300).attr("id","keySvg")
 
-    var defs = svg.append("defs");
-
-    var gradient = defs.append("linearGradient")
-       .attr("id", "svgGradient")
-       .attr("x1", "0%")
-       .attr("x2", "100%")
-       .attr("y1", "0%")
-       .attr("y2", "0%");
-
-    gradient.append("stop")
-       .attr('class', 'start')
-       .attr("offset", "0%")
-       .attr("stop-color", "white")
-       .attr("stop-opacity", 1);
-
-    gradient.append("stop")
-       .attr('class', 'end')
-       .attr("offset", "100%")
-       .attr("stop-color", color)
-       .attr("stop-opacity", 1);
-   
-   var w = 200
-       var h = 10
-       var l = 120
-       var t = 30
-    svg.append("rect")
-    .attr("width",w)
-    .attr("height",h)
-    .attr("x",l)
-    .attr("y",t)
-    .attr("fill","url(#svgGradient)")
-    
-    svg.append("rect")
-    .attr("width",w)
-    .attr("height",h)
-    .attr("x",l)
-    .attr("y",t*2)
-       .attr("opacity",.3)
-    .attr("fill","url(#svgGradient)")
-       
-      svg.append("text").text("covered").attr("x",l-10).attr("y",t+10).attr("text-anchor","end")
-      svg.append("text").text("notcovered").attr("x",l-10).attr("y",t*2+10).attr("text-anchor","end")
-      svg.append("text").text("low priority").attr("x",l).attr("y",t-10)//.attr("text-anchor","end")
-      svg.append("text").text("high prioirty").attr("x",w+l).attr("y",t-10).attr("text-anchor","end")
-
-}
 
 function strategyMenu(map,data){
     
