@@ -65,7 +65,7 @@ var keyColors = {
     Covid_capita:"#d5453e",
     
     Covid:"#6fac38",
-    Medicaid_capita:"red",
+    Medicaid_demand:"red",
     
     YPLL_med:"#569f3d",
     Unemployment_med:"#bec23f",
@@ -80,7 +80,7 @@ var keyColors = {
     Unemployment:"#17DCFF",
     Covid_capita:"#7E6EFF",
     Covid_death_capita:"#E400FF",
-    Medicaid_capita:"red",    
+    Medicaid_demand:"red",    
      Covid:"green"
 }
 
@@ -89,7 +89,7 @@ var keyColors = {
 
  var measureSet = [
     // "medicaid_demand",
-      "Medicaid_capita",
+      "Medicaid_demand",
      "SVI",
      "YPLL",
      "Unemployment",
@@ -99,13 +99,13 @@ var keyColors = {
 ]
 
 var measureDisplayText = {
-     Proportional_allocation_to_Medicaid_capita:"MEDICAID",
+     Proportional_allocation_to_Medicaid_demand:"MEDICAID",
      Proportional_allocation_to_SVI:"SVI",
      Proportional_allocation_to_YPLL:"YPLL",
      Proportional_allocation_to_Unemployment:"UNEMPLOYMENT",
      Proportional_allocation_to_Covid:"TOTAL COVID CASES",
-     Proportional_allocation_to_Covid_capita:"COVID CASES",
-     Proportional_allocation_to_Covid_death_capita:"COVID DEATHS"
+     Proportional_allocation_to_Covid_capita:"COVID CASES /POP",
+     Proportional_allocation_to_Covid_death_capita:"COVID DEATHS /POP"
    
 }
 
@@ -315,7 +315,6 @@ function drawGrid(map,comparisonsSet){
                 .text(measureDisplayText["Proportional_allocation_to_"+measureSet[i]])
                 .attr("x",x)
                 .attr("y",y)
-                .style("font-size","12px")
                 .attr("transform","rotate(-90 "+x+","+y+")")
                 .attr("fill",keyColors[measureSet[i]])
         
@@ -323,7 +322,6 @@ function drawGrid(map,comparisonsSet){
             if(i==0){
                 svg.append("text")
                 .text(measureDisplayText["Proportional_allocation_to_"+measureSet[j]])
-                .style("font-size","12px")
                 .attr("x",i)
                 .attr("y",j*gridSize+gridSize/2)
                 .attr("transform","translate(125,115)")
