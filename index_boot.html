@@ -24,7 +24,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@700&family=Raleway:wght@600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@700&family=Coda+Caption:wght@800&family=Hammersmith+One&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="css/geocoder.css"/>
-    <link rel="stylesheet" type="text/css" href="css/20200825.css"/>
+    <link rel="stylesheet" type="text/css" href="css/style_withBoot.css"/>
 
 <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
@@ -46,47 +46,66 @@
 
 <body>
 
-<div id="head">
-  <span id="brand">MAPPING THE NEW POLITICS OF CARE</span><br>
 
-</div>
+<div class="container-fluid">
+    <div id="head"  class="row">
+      <span id="brand" class="col-12 temp">MAPPING THE NEW POLITICS OF CARE</span><br>
+    </div>
+  
+  <div id="mainMenu"  class="row">
+      <div class="col-3 temp mainMenu"><a href="index.html" style="font-weight:bold; background-color:gold">Vulnerabilities</a></div>
+      <div class="col-3 temp mainMenu"><a href="allocations.html">Allocations</a></div>
+      <div class="col-3  temp mainMenu"><a href="comparisons.html">Comparisons</a></div>
+      <div class="col-3  temp mainMenu"><a href="about.html"  id="about">About</a></div>
+  </div>  
+
   <!-- <div id="date"></div> -->
 
-<div id="mainMenu">
-  <a href="index.html" class="mapMenu" style="font-weight:bold; background-color:gold">Vulnerabilities</a>
-  <a href="allocations.html" class="mapMenu">Allocations</a>
-  <a href="comparisons.html" class="mapMenu">Comparisons</a>
-  <a href="about.html" class="mapMenu" id="about">About</a>
-  
-<!--  <a href="caseStudies.html">CASE STUDIES</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="about.html">ABOUT</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->
+  <div id="main"  class="row">
+        <div  class="col-2 temp">
+          <nav id="placesMenu" >Go To:
+                  <select id="ddlCustomers">
+                  </select>
+          </nav>
+            
+              <div id = "strategies">
+                <nav id="strategiesQuestion" class="menu">We can define communities in greatest need in many ways...
+                </nav>
+
+                <nav id="strategiesMenu" class="menu">
+                </nav>
+              </div>
+              <div id = "colorGrid">
+               <!-- <div id="univar">Show Workers Assigned/Show Priority Score</div>  -->
+                <div id="colorTitle">Click to Filter Map</div>
+              </div>
+            <div id="noData" class="menu"></div>
+            
+        </div>
+      
+      
+      <!-- 
+
+      -->
+
+
+
+    <div id="map" class="col-10 temp fill-height">
+      middle
+    </div>
+
+    <!-- <div id="map" class="col-3">
+
+    </div> -->
+ </div>
+
+
 </div>
-<div id="byState"></div>
-<div id="nav">
-  <nav id="placesMenu" >Go To:
-    <select id="ddlCustomers">
-    </select>
-  </nav>
-
-  <div id = "strategies">
-    <nav id="strategiesQuestion" class="menu">We can define communities in greatest need in many ways...
-    </nav>
-    
-    <nav id="strategiesMenu" class="menu">
-    </nav>
-  </div>  
-  <div id = "colorGrid">
-    <!-- <div id="univar">Show Workers Assigned/Show Priority Score</div> -->
-    <div id="colorTitle">Click to Filter Map</div>
-  </div>   
-<div id="noData" class="menu"></div>
-</div>
 
 
 
-
-  <div id="map"></div>
-  <div id="mapPopup"></div>
+  <!-- <div id="map"></div>
+   --><div id="mapPopup"></div>
   
   <div id="popupMap"></div>
  
@@ -97,7 +116,7 @@
 <script type="text/javascript" src="js/dc.js"></script>
 <script type="text/javascript" src="js/queue.v1.min.js"></script>
 <script type="text/javascript" src="nodata.js"></script>
-<script type="text/javascript" src="vulnerabilities.js"></script>
+<script type="text/javascript" src="vulnerabilities_boot.js"></script>
 
 
 </body>
