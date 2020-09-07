@@ -1034,7 +1034,7 @@ function newScatterPlot(state){
     svg.append("text").text("CHWs assigned by "+measureDisplayText[yLabel]).attr("x",yLabelX).attr("y",yLabelY)
     .attr("transform","rotate(-90,"+yLabelX+","+yLabelY+")").attr("text-anchor","middle")
     
-    svg.append("text").text("less").attr("x",p*2).attr("y",h+p*1.8).attr("text-anchor","start").style("font-style","italic").style("font-weight","bold")
+    svg.append("text").text("less").attr("x",p*1.8).attr("y",h+p*1.8).attr("text-anchor","start").style("font-style","italic").style("font-weight","bold")
     svg.append("text").text("more").attr("x",w+p*4).attr("y",h+p*1.8).attr("text-anchor","end").style("font-style","italic").style("font-weight","bold")
     
     svg.append("text").text("less").attr("x",p).attr("y",h+p).attr("text-anchor","start").style("font-style","italic").style("font-weight","bold")
