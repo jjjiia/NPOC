@@ -109,9 +109,8 @@ var states = d3.json("simplestates.geojson")
 ]
 
 
-
 var measureDisplayText = {
-     Medicaid_demand:"MEDICAID",
+     Medicaid_demand:"MEDICAID ENROLLEES",
      SVI:"SOCIAL VULNERALBILITY INDEX",
      YPLL:"YEARS OF POTENTIAL LIFE LOST",
      Unemployment:"UNEMPLOYMENT",
@@ -122,13 +121,13 @@ var measureDisplayText = {
 }
 
 var measureDisplayTextPop={
-     Medicaid_demand:"Medicaid",
+     Medicaid_demand:"Medicaid Enrollees",
      SVI:"Social Vulneralbility Index",
      YPLL:"Years of Potential Life Lost",
      Unemployment:"Unemployment",
       Covid:"Total Covid Cases",
-     Covid_capita:"Covid Cases per 100,000 Residents",
-     Covid_death_capita:"Covid Deaths per 100,000 Residents"
+     Covid_capita:"Covid Cases by Population",
+     Covid_death_capita:"Covid Deaths by Population"
 }
 
 Promise.all([counties,usOutline,countyCentroids,allData,timeStamp,states])
@@ -469,15 +468,15 @@ function drawMap(data,outline){
              
              var chwAssigned = Math.round(chwNeed*(feature["properties"][currentSelection]/100))
              
-             var groupLabels = {
-                 _0:"Low Priority",
-                 _1:"Medium Priority",
-                 _2:"High Priority"
-             }
+             // var groupLabels = {
+  //                _0:"Low Priority",
+  //                _1:"Medium Priority",
+  //                _2:"High Priority"
+  //            }
              
-             var currentGroup = feature.properties[currentSelection +"_group"]
+         //    var currentGroup = feature.properties[currentSelection +"_group"]
              
-             var currentGroupDescription = groupLabels[currentGroup]
+         //    var currentGroupDescription = groupLabels[currentGroup]
              
              var roundedValue = Math.round(feature.properties["Normalized_"+pub.column]*100)/100
              if(roundedValue==0){
@@ -485,12 +484,11 @@ function drawMap(data,outline){
              }
              
              var displayString = "<span class=\"popupTitle\">"+countyName+"</span><br>"
-                     +"Population: "+numberWithCommas(population)+"<br>"
-                     +"<strong>"+measureDisplayTextPop[pub.column]+":</strong> "+feature.properties[pub.column]+"<br>"+"<br>"
-                     +"<strong>Priority score by "+measureDisplayTextPop[pub.column]+":</strong> "
-                     +roundedValue+"<br>"
-                     +"<br>"
-                 
+                     +"Population: "+numberWithCommas(population)+"<br>"+"<br>"
+                     +measureDisplayTextPop[pub.column]+":<br><span class=\"popupTitle\">"
+                     +Math.ceil(feature.properties[pub.column])+"</span><br>"
+                     +"Vulnerability score ("+measureDisplayTextPop[pub.column]+"):<br><span class=\"popupTitle\">"
+                     +roundedValue+"</span><br>"                 
              var needsMetString = currentSelectionCoverage+"% of needs met</strong>"
              
              if(currentSelectionCoverage ==-1){
@@ -846,8 +844,8 @@ function colorByWorkers(map){
 }
 
 function drawGridWithoutCoverage(map){
-    var gridHeight = 220
-    var gridWidth = 220
+    var gridHeight = 280
+    var gridWidth = 240
     var gridSize = 60
     d3.select("#colorGrid svg").remove()
     var uniSVG = d3.select("#colorGrid").append("svg").attr("width",gridWidth).attr("height",gridHeight)
@@ -862,24 +860,17 @@ function drawGridWithoutCoverage(map){
     var currentFilter = null
     
     
-    uniSVG.append("text").text("high").attr("x",185).attr("y",40).attr("text-anchor","start")
-    uniSVG.append("text").text("low").attr("x",185).attr("y",195).attr("text-anchor","start")
+    uniSVG.append("text").text("high").attr("x",215).attr("y",60).attr("text-anchor","start")
+    uniSVG.append("text").text("low").attr("x",215).attr("y",215).attr("text-anchor","start")
     
-    var measureDisplayTextShort = {
-        percentage_scenario_high_demand:"new cases",
-        percentage_scenario_SVI_high_demand:"SVI*new cases",
-        percentage_scenario_hotspot:"new cases/pop",
-        percentage_scenario_SVI_pop:"SVI*pop",
-        percentage_scenario_SVI_hotspot:"SVI*(new cases/pop)"
-    }
 
-    uniSVG.append("text").text(pub.column).attr("x",40).attr("y",110).style("font-size","12px")
-    .attr("transform","rotate(-90 40,110)").style("font-weight","bold")
-    .attr("text-anchor","middle")
+    uniSVG.append("text").text(measureDisplayTextPop[pub.column]).attr("x",0).attr("y",15).style("font-size","16px")    
+    uniSVG.append("text").text("Vulnerability Score relative to rest of State").attr("x",0).attr("y",30)
+    .style("font-size","12px")
     
-    uniSVG.append("text").text("PRIORITY SCORE").attr("x",60).attr("y",110).style("font-size","12px")
-    .attr("transform","rotate(-90 60,110)").style("font-weight","bold")
-    .attr("text-anchor","middle")
+    uniSVG.append("text").text("Click to filter map").attr("x",0).attr("y",55)
+    .style("font-size","12px")
+    .style("font-style","italic")
     
     // uniSVG.append("rect").attr("width",gridSize/2).attr("height",gridSize/2).attr("x",10).attr("y",190).attr("fill","#ddd")
    //  uniSVG.append("text").attr("x",35).attr("y",204).text("Counties with no recorded cases")
@@ -894,7 +885,7 @@ function drawGridWithoutCoverage(map){
                 .attr("height",gridSize/4)
                 .attr("x",20)
                 .attr("y",function(d,i){return gridHeight - (i+1)*(gridSize/4+2)})
-                .attr("transform","translate(100,-20)")
+                .attr("transform","translate(130,-60)")
                 .attr("class","gridCell")
                 .on("mouseover",function(d,i){
                     var groupName = "_"+(i)            
@@ -951,7 +942,7 @@ function drawGridWithoutCoverage(map){
                 .attr("x",20)
                 .attr("y",function(d,i){return gridHeight- i*(gridSize/4+2)-5})
                 .attr("text-anchor","end")
-                .attr("transform","translate(95,-20)")
+                .attr("transform","translate(125,-60)")
 }
 function formatSearch(item) {
     var selectionText = item.text.split("|");
