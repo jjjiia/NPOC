@@ -99,8 +99,8 @@ font-family: 'Hammersmith One', sans-serif;}
 #mapPopupCompare{
     margin:0px;
     width:200px;
-    height:200px;
-    border:1px solid #000;
+    height:130px;
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,.2));
     padding:10px;
     position:absolute;
     background-color:rgba(255,255,255,.9);
@@ -379,9 +379,14 @@ select{
    width:200px;  
    overflow:auto;
  }
+ #plotTitle{
+   border-top:1px solid #ddd;
+   padding-top:5px;
+   font-weight:bold;
+ }
  #comparisonPlot{
-     border-top:1px solid #ddd;
-     width:100%;
+/*     border-top:1px solid #ddd;
+*/     width:100%;
      z-index:9999999999;
  }
  .coverageOption{
@@ -390,7 +395,7 @@ select{
  .menu{
      font-family: 'Open Sans', sans-serif;
      background:rgba(0,0,0,0);
-     font-size:14px;
+     font-size:12px;
      display: inline-block;
  }
  

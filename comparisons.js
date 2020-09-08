@@ -104,8 +104,8 @@ var measureDisplayText = {
      Proportional_allocation_to_YPLL:"YPLL",
      Proportional_allocation_to_Unemployment:"UNEMPLOYMENT",
      Proportional_allocation_to_Covid:"TOTAL COVID CASES",
-     Proportional_allocation_to_Covid_capita:"COVID CASES /POP",
-     Proportional_allocation_to_Covid_death_capita:"COVID DEATHS /POP"
+     Proportional_allocation_to_Covid_capita:"COVID CASES / POP",
+     Proportional_allocation_to_Covid_death_capita:"COVID DEATHS / POP"
    
 }
 
@@ -705,7 +705,7 @@ var maxBounds = [
                  var value1 = Math.ceil(parseFloat(feature["properties"][key1]))
                  var key2 = "Proportional_allocation_to_"+pub.pair.split("XXX")[1]
                  var value2 = Math.ceil(parseFloat(feature["properties"][key2]))
-                 var dif = Math.abs(value1-value2)
+                 var dif = numberWithCommas(Math.abs(value1-value2))
                  
                  var comparisonString = ""
                  
@@ -732,22 +732,21 @@ var maxBounds = [
                  }
                  
                  else{
+                     
+                
+                     
                      if(value1>value2){
-                         comparisonString = "Prioritizing by "
-                         +key1.replace("Proportional_allocation_to_","") 
-                         +" allocates "+dif+" more CHWs to this county than prioritizing by "
-                         +key2.replace("Proportional_allocation_to_","")
+                         comparisonString = dif+" more CHWs by "+measureDisplayText[key1]+ " than by "+ measureDisplayText[key2]
+                         
                      
                      }else if(value1<value2){
-                         comparisonString = "Prioritizing by "
-                         +key2.replace("Proportional_allocation_to_","") 
-                         +" allocates "+dif+" more CHWs to this county than prioritizing by "
-                         +key1.replace("Proportional_allocation_to_","")
+                         comparisonString = dif+" more CHWs by "+measureDisplayText[key2]+ " than by "+ measureDisplayText[key1]
+                        
                      
                      }else{
                          comparisonString = "Prioritizing by "
-                         +key1.replace("Proportional_allocation_to_","")
-                         +" and "+key2.replace("Proportional_allocation_to_","")
+                         +measureDisplayText[key1]
+                         +" and "+measureDisplayText[key2]
                           +" allocates the same amount of workers to this county."
                      }
              
@@ -755,12 +754,13 @@ var maxBounds = [
                      "<span style = \"font-size:16px;\">"
                      +"<strong>"+countyName
                      +"</span>"
-                     +"</strong><br><strong>Population:</strong> "+population+"<br>"+"<br><strong>"
-                     +"<span style = \"font-size:14px; line-height:120%;\">"
-                     +comparisonString+"</span>"
-                     +"</strong><br><br>Number of allocated workers for: <br><strong>"+key1.replace("Proportional_allocation_to_","")+": </strong>"+value1
-                     +"<br><strong>"+key2.replace("Proportional_allocation_to_","")+": </strong>"+value2
-             
+                     +"</strong><br><strong>Population:</strong> "+numberWithCommas(population)+"<br>"+"<br><strong>"
+                     +measureDisplayText[key1]+": <span class=\"popupTitle\">"+numberWithCommas(value1)+"</span><br>"
+                     +measureDisplayText[key2]+": <span class=\"popupTitle\">"+numberWithCommas(value2)+"</span><br>"
+                     +"Difference: "+comparisonString
+                     
+                     
+                     
                      var chartData = []
                       for(var p in measureSet){
                           var pk = "Proportional_allocation_to_"+measureSet[p]
@@ -1070,10 +1070,21 @@ function newScatterPlot(state){
     .attr("id",function(d){return "scatter_"+d.FIPS})
     .attr("transform","translate("+p*3+","+p+")")
     .on("mouseover",function(d){
+        
         //console.log(d)
-        var displayString = d.county+" County, "+d.stateAbbr+"<br>"
-        +xLabel+": "+d[xLabel]
-        +yLabel+": "+d[yLabel]
+        if(d[xLabel]>d[yLabel]){
+            var compareString = (d[xLabel]-d[yLabel])+" more CHWs by "+measureDisplayText[xLabel]+ " than by "+ measureDisplayText[yLabel]
+        }else if(d[xLabel]<d[yLabel]){
+            var compareString =(d[xLabel]-d[yLabel])+" more CHWs by "+measureDisplayText[yLabel]+ " than by "+ measureDisplayText[xLabel]
+        }else{
+            var compareString = measureDisplayText[yLabel]+ " and "+ measureDisplayText[xLabel]+ " result in same number of CHWs"
+        }
+        
+        var displayString =" <span class=\"popupTitle\">"+ d.county+" County, "+d.stateAbbr+"</span>"+"<br>"
+        +"Poplation: "+d["totalPopulation"]+"<br>"
+        +measureDisplayText[xLabel]+":  <span class=\"popupTitle\">"+numberWithCommas(d[xLabel])+"</span> CHWs"+"<br>"
+        +measureDisplayText[yLabel]+":  <span class=\"popupTitle\">"+numberWithCommas(d[yLabel])+"</span> CHWs"+"<br>"
+        +"Difference: "+compareString
         
       tooltip
       .style("position","absolute")
