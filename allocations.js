@@ -135,7 +135,7 @@ var stateAllocations = d3.csv("state_level_allocation.csv")
 
 
 var measureDisplayText = {
-     Proportional_allocation_to_Medicaid_demand:"MEDICAID",
+     Proportional_allocation_to_Medicaid_demand:"MEDICAID ENROLLEES",
      Proportional_allocation_to_SVI:"SOCIAL VULNERALBILITY INDEX",
      Proportional_allocation_to_YPLL:"YEARS OF POTENTIAL LIFE LOST",
      Proportional_allocation_to_Unemployment:"UNEMPLOYMENT",
@@ -146,7 +146,7 @@ var measureDisplayText = {
 }
 
 var measureDisplayTextPop={
-     Proportional_allocation_to_Medicaid_demand:"Medicaid",
+     Proportional_allocation_to_Medicaid_demand:"Medicaid Enrollees",
      Proportional_allocation_to_SVI:"Social Vulneralbility Index",
      Proportional_allocation_to_YPLL:"Years of Potential Life Lost",
      Proportional_allocation_to_Unemployment:"Unemployment",
@@ -280,7 +280,7 @@ function turnToDictFIPS(data,keyColumn,stateAllocations){
             newDict[key]=values
         }        
     }
-    console.log(newDict)
+    //console.log(newDict)
     return newDict
 }
 function combineGeojson(all,counties,stateAllocations){
@@ -534,21 +534,12 @@ function drawMap(data,outline){
              
              var chwAssigned = Math.round(chwNeed*(feature["properties"][currentSelection]/100))
              
-             var groupLabels = {
-                 _0:"Low Priority",
-                 _1:"Medium Priority",
-                 _2:"High Priority"
-             }
-             
-             var currentGroup = feature.properties[currentSelection +"_group"]
-             
-             var currentGroupDescription = groupLabels[currentGroup]
              var displayString = "<span class=\"popupTitle\">"+countyName+"</span><br>"
-                     +"Population: "+numberWithCommas(population)+"<br>"
-                     +"<strong>Number of workers allocated using "+measureDisplayTextPop[pub.column]+":</strong> "
-                     +Math.floor(feature.properties[pub.column])+"<br>"
+                     +"Population: "+numberWithCommas(population)+"<br>"+"<br>"
+                     +"Number of workers allocated using "+measureDisplayTextPop[pub.column]+":<br><span class=\"popupTitle\">"
+                     +numberWithCommas(Math.floor(feature.properties[pub.column]))+"</span>"
                      +"<br>"
-                 +"constitutes "+feature.properties["percentAllocated_"+pub.column]+"% of the total workers statewide"
+                 +"Constitutes <span class=\"popupTitle\">"+feature.properties["percentAllocated_"+pub.column]+"%</span> of the total workers statewide"
                  
              var needsMetString = currentSelectionCoverage+"% of needs met</strong>"
              

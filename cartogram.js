@@ -162,7 +162,7 @@ function cartoGoToState(state){
           var min = stateAllocationPercentMaxMin[pub.currentState].min
     
     d3.select("#stateHeader").html("<span style=\"font-size:24px; font-weight:bold;\">"+stateName+"</span><br>"
-      +"Total Workers Allocated: "+Math.floor(allocated) +"<br>"
+      +"Total Workers Allocated: "+numberWithCommas(Math.floor(allocated)) +"<br>"
       )
     
     d3.select("#stateKey").html("")
