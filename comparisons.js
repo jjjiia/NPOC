@@ -2,6 +2,9 @@ $(document).ready(function() {
     $('.js-example-basic-single').select2();
 });
 
+var possibleStartStates = ["CA","LA","FL","NY","MT","TX"]
+var randomStartState = possibleStartStates[Math.round(Math.random()*possibleStartStates.length-1)]
+
 //"F_THEME1","F_THEME2", "F_THEME3", "F_THEME4"
 var map;
 var ndx;
@@ -37,9 +40,9 @@ var pub = {
     overallMaxFluctuation:0,
     showRangeOnly:false,
     bounds:null,
-    startState:"CA",
+    startState:randomStartState,
     stateAllocations:null,
-    currentState:"CA",
+    currentState:randomStartState,
     dataByState:null
 }
 var stateAllocationPercentMaxMin = {}

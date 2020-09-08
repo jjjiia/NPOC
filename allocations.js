@@ -14,6 +14,8 @@ var themesDefinitions ={
     "SPL_THEMES":"Sum of series themes", 
     "RPL_THEMES":"Overall percentile ranking for themes"
 }
+var possibleStartStates = ["CA","LA","FL","NY","MT","TX"]
+var randomStartState = possibleStartStates[Math.round(Math.random()*possibleStartStates.length-1)]
 var pub = {
     strategy:"percentage_scenario_SVI_hotspot",
     coverage:"base_case_capacity_30",
@@ -35,9 +37,9 @@ var pub = {
     max:0,
     maxAllocationByPop:0,
     minAllocationByPop:99999999999,
-    startState:"CA",
+    startState:randomStartState,
     stateAllocations:null,
-    currentState:"CA"
+    currentState:randomStartState
 }
 var stateAllocationPercentMaxMin = {}
 var allocationMaxs = {
@@ -442,12 +444,13 @@ function drawMap(data,outline){
         // d3.selectAll("."+pub.strategy).style("background-color","#000").style("color","#fff")
         //d3.selectAll("."+pub.strategy+"_radialS")//.style("background-color","#000").style("color","#fff")//.style("border","1px solid "+ highlightColor)
             cartoGoToState(pub.startState)
+ var stateToNumber = {'WA': '53', 'DE': '10', 'DC': '11', 'WI': '55', 'WV': '54', 'HI': '15', 'FL': '12', 'WY': '56', 'NH': '33', 'NJ': '34', 'NM': '35', 'TX': '48', 'LA': '22', 'NC': '37', 'ND': '38', 'NE': '31', 'TN': '47', 'NY': '36', 'PA': '42', 'CA': '06', 'NV': '32', 'VA': '51', 'GU': '66', 'CO': '08', 'VI': '78', 'AK': '02', 'AL': '01', 'AS': '60', 'AR': '05', 'VT': '50', 'IL': '17', 'GA': '13', 'IN': '18', 'IA': '19', 'OK': '40', 'AZ': '04', 'ID': '16', 'CT': '09', 'ME': '23', 'MD': '24', 'MA': '25', 'OH': '39', 'UT': '49', 'MO': '29', 'MN': '27', 'MI': '26', 'RI': '44', 'KS': '20', 'MT': '30', 'MP': '69', 'MS': '28', 'PR': '72', 'SC': '45', 'KY': '21', 'OR': '41', 'SD': '46'}// console.log(this.value)           
            
-           map.setFilter("county-name",["==","STATEFP","06"])
-           map.setFilter("state-abbr",["==","STATEFP","06"])
+           map.setFilter("county-name",["==","STATEFP",stateToNumber[pub.startState]])
+           map.setFilter("state-abbr",["==","STATEFP",stateToNumber[pub.startState]])
            map.setFilter("reservation-name",["==","STATE",pub.startState])
-           map.setFilter("state_mask",["!=","STATEFP","06"])
-           map.setFilter("state_mask_outline",["==","STATEFP","06"])     
+           map.setFilter("state_mask",["!=","STATEFP",stateToNumber[pub.startState]])
+           map.setFilter("state_mask_outline",["==","STATEFP",stateToNumber[pub.startState]])     
         
             d3.selectAll(".hex").attr("opacity",0.5)
             d3.select("."+pub.startState+"_hex").attr("opacity",1)
