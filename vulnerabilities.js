@@ -126,8 +126,8 @@ var measureDisplayTextPop={
      YPLL:"Years of Potential Life Lost",
      Unemployment:"Unemployment",
       Covid:"Total Covid Cases",
-     Covid_capita:"Covid Cases by Population",
-     Covid_death_capita:"Covid Deaths by Population"
+     Covid_capita:"Covid Cases per 100,000 Residents",
+     Covid_death_capita:"Covid Deaths per 100,000 Residents"
 }
 
 Promise.all([counties,usOutline,countyCentroids,allData,timeStamp,states])
@@ -864,7 +864,7 @@ function drawGridWithoutCoverage(map){
     uniSVG.append("text").text("low").attr("x",215).attr("y",215).attr("text-anchor","start")
     
 
-    uniSVG.append("text").text(measureDisplayTextPop[pub.column]).attr("x",0).attr("y",15).style("font-size","16px")    
+    uniSVG.append("text").text(measureDisplayTextPop[pub.column]).attr("x",0).attr("y",15).style("font-size","14px")    
     uniSVG.append("text").text("Vulnerability Score relative to rest of State").attr("x",0).attr("y",30)
     .style("font-size","12px")
     
