@@ -102,13 +102,13 @@ var keyColors = {
 ]
 
 var measureDisplayText = {
-     Proportional_allocation_to_Medicaid_demand:"MEDICAID",
+     Proportional_allocation_to_Medicaid_demand:"MEDICAID ENROLLEES",
      Proportional_allocation_to_SVI:"SVI",
      Proportional_allocation_to_YPLL:"YPLL",
      Proportional_allocation_to_Unemployment:"UNEMPLOYMENT",
-     Proportional_allocation_to_Covid:"TOTAL COVID CASES",
-     Proportional_allocation_to_Covid_capita:"COVID CASES / POP",
-     Proportional_allocation_to_Covid_death_capita:"COVID DEATHS / POP"
+     Proportional_allocation_to_Covid:"COVID CASES (14 DAYS)",
+     Proportional_allocation_to_Covid_capita:"COVID CASES / 100K",
+     Proportional_allocation_to_Covid_death_capita:"COVID DEATHS / 100K"
    
 }
 
@@ -313,7 +313,7 @@ function drawGrid(map,comparisonsSet){
     var gridSize = 15
     for(var i in measureSet){
             var x = i*gridSize+140
-            var y = 110
+            var y = 115
                 svg.append("text")
                 .text(measureDisplayText["Proportional_allocation_to_"+measureSet[i]])
                 .attr("x",x)
@@ -327,7 +327,7 @@ function drawGrid(map,comparisonsSet){
                 .text(measureDisplayText["Proportional_allocation_to_"+measureSet[j]])
                 .attr("x",i)
                 .attr("y",j*gridSize+gridSize/2)
-                .attr("transform","translate(125,115)")
+                .attr("transform","translate(125,120)")
                 .attr("text-anchor","end")
                 .attr("fill",keyColors[measureSet[j]])
             }
@@ -348,7 +348,7 @@ function drawGrid(map,comparisonsSet){
                         .attr("y",gridSize*i)
                         .attr("id",key.replace("compare_",""))
                         .attr("class","grid")
-                        .attr("transform","translate(130,115)")
+                        .attr("transform","translate(130,120)")
                         .attr("cursor","pointer")
                         .on("click",function(){
                           //  console.log("grid click")
@@ -379,9 +379,10 @@ function drawGrid(map,comparisonsSet){
                         .attr("height",gridSize-6)
                         .attr("x",gridSize*j)
                         .attr("y",gridSize*i)
-                        .attr("transform","translate(130,115)")
+                        .attr("transform","translate(132,120)")
                         .attr("fill","none")
                         .attr("stroke","#ddd")
+                        .attr("stroke-width",.5)
                     }
             }else{
                     svg.append("rect")
@@ -389,9 +390,11 @@ function drawGrid(map,comparisonsSet){
                         .attr("height",gridSize-6)
                         .attr("x",gridSize*j)
                         .attr("y",gridSize*i)
-                        .attr("transform","translate(130,115)")
+                        .attr("transform","translate(132,120)")
                         .attr("fill","none")
+
                         .attr("stroke","#ddd")
+                        .attr("stroke-width",.5)
             }
         }
     }

@@ -815,7 +815,7 @@ function strategyMenu(map,data){
      d3.select("#strategiesMenu")
      .append("div")
      .attr("id","sviAsterLabel").html("explaination text for the reconfigured SVI")
-     .style("position","absolute").style("left","225px").style("top","125px")
+     .style("position","absolute").style("left","225px").style("top","85px")
      .style("width","150px")
      .style('padding',"5px")
      .style('background-color',"#ffffff")

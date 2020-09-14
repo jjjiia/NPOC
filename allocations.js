@@ -135,17 +135,17 @@ var stateAllocations = d3.csv("state_level_allocation.csv")
 ]
 
 
+ var measureDisplayText = {
+      Proportional_allocation_to_Medicaid_demand:"MEDICAID ENROLLEES",
+      Proportional_allocation_to_SVI:"SOCIAL VULNERALBILITY INDEX <span class=\"sviAster\">*</span>",
+      Proportional_allocation_to_YPLL:"YEARS OF POTENTIAL LIFE LOST RATE",
+      Proportional_allocation_to_Unemployment:"UNEMPLOYMENT RATE",
+       Proportional_allocation_to_Covid:"<span class=\"covidMenu\">COVID CASES (14 DAYS)</span>",
+      Proportional_allocation_to_Covid_capita:"<span class=\"covidMenu\">COVID CASES / 100K</span>",
+      Proportional_allocation_to_Covid_death_capita:"<span class=\"covidMenu\">COVID DEATHS / 100K</span>"
 
-var measureDisplayText = {
-     Proportional_allocation_to_Medicaid_demand:"MEDICAID ENROLLEES",
-     Proportional_allocation_to_SVI:"SOCIAL VULNERALBILITY INDEX",
-     Proportional_allocation_to_YPLL:"YEARS OF POTENTIAL LIFE LOST",
-     Proportional_allocation_to_Unemployment:"UNEMPLOYMENT",
-     Proportional_allocation_to_Covid:"<span class=\"covidMenu\">TOTAL COVID CASES</span>",
-     Proportional_allocation_to_Covid_capita:"<span class=\"covidMenu\">COVID CASES BY POPULATION</span>",
-     Proportional_allocation_to_Covid_death_capita:"<span class=\"covidMenu\">COVID DEATHS BY POPULATION</span>"
-   
-}
+ }
+
 
 var measureDisplayTextPop={
      Proportional_allocation_to_Medicaid_demand:"Medicaid Enrollees",
@@ -887,6 +887,25 @@ function strategyMenu(map,data){
          }
      }
      d3.selectAll(".measureGridLabel").style("font-size","12px")
+     
+     d3.select("#strategiesMenu")
+     .append("div")
+     .attr("id","sviAsterLabel").html("explaination text for the reconfigured SVI")
+     .style("position","absolute").style("left","225px").style("top","355px")
+     .style("width","150px")
+     .style('padding',"5px")
+     .style('background-color',"#ffffff")
+     .style("border","1px solid black")
+     .style('visibility',"hidden")
+     
+    d3.select(".sviAster")
+     .style('text-decoration',"underline")
+     .on("mouseover", function(){
+         d3.select("#sviAsterLabel").style('visibility',"visible")
+     })
+     .on("mouseout", function(){
+         d3.select("#sviAsterLabel").style('visibility',"hidden")
+     })
 }
 
                 
