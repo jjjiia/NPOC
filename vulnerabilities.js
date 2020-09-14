@@ -111,21 +111,20 @@ var states = d3.json("simplestates.geojson")
 
 var measureDisplayText = {
      Medicaid_demand:"MEDICAID ENROLLEES",
-     SVI:"SOCIAL VULNERALBILITY INDEX",
-     YPLL:"YEARS OF POTENTIAL LIFE LOST",
-     Unemployment:"UNEMPLOYMENT",
-      Covid:"<span class=\"covidMenu\">TOTAL COVID CASES</span>",
-     Covid_capita:"<span class=\"covidMenu\">COVID CASES BY POPULATION</span>",
-     Covid_death_capita:"<span class=\"covidMenu\">COVID DEATHS BY POPULATION</span>"
+     SVI:"SOCIAL VULNERALBILITY INDEX <span class=\"sviAster\">*</span>",
+     YPLL:"YEARS OF POTENTIAL LIFE LOST RATE",
+     Unemployment:"UNEMPLOYMENT RATE",
+      Covid:"<span class=\"covidMenu\">COVID CASES (14 DAYS)</span>",
+     Covid_capita:"<span class=\"covidMenu\">COVID CASES / 100K</span>",
+     Covid_death_capita:"<span class=\"covidMenu\">COVID DEATHS / 100K</span>"
    
 }
-
 var measureDisplayTextPop={
-     Medicaid_demand:"Medicaid Enrollees",
-     SVI:"Social Vulneralbility Index",
+     Medicaid_demand:"Total estimated medicaid enrollment",
+     SVI:"Social Vulneralbility Index*",
      YPLL:"Years of Potential Life Lost",
      Unemployment:"Unemployment",
-      Covid:"Total Covid Cases",
+      Covid:"Total Covid Cases (14 Days)",
      Covid_capita:"Covid Cases per 100,000 Residents",
      Covid_death_capita:"Covid Deaths per 100,000 Residents"
 }
@@ -151,7 +150,8 @@ var lineWeight = {stops:[[-1,0],[-0.01,0],[0,2],[99,.5],[100,0]]}
 var centroids = null
 var latestDate = null
 
-function ready(counties,outline,centroids,modelData,timeStamp,states){
+function ready(counties,outline,centroids,modelData,timeStamp,states){    
+    
     d3.select("#closeMap").on("click",function(){
         d3.select("#SVIMap").style("display","none")
     })
@@ -808,6 +808,29 @@ function strategyMenu(map,data){
        
      }
      d3.selectAll(".measureGridLabel").style("font-size","12px")
+     
+     
+     
+     
+     d3.select("#strategiesMenu")
+     .append("div")
+     .attr("id","sviAsterLabel").html("explaination text for the reconfigured SVI")
+     .style("position","absolute").style("left","225px").style("top","125px")
+     .style("width","150px")
+     .style('padding',"5px")
+     .style('background-color',"#ffffff")
+     .style("border","1px solid black")
+     .style('visibility',"hidden")
+     
+    d3.select(".sviAster")
+     .style('text-decoration',"underline")
+     .on("mouseover", function(){
+         d3.select("#sviAsterLabel").style('visibility',"visible")
+     })
+     .on("mouseout", function(){
+         d3.select("#sviAsterLabel").style('visibility',"hidden")
+     })
+     
 }
 
                 
