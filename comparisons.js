@@ -558,7 +558,7 @@ var maxBounds = [
         bounds:bounds,
         zoom: 3.8,
         preserveDrawingBuffer: true,
-        minZoom:3.5,
+        minZoom:5,
         maxBounds: maxBounds    
     });
     
