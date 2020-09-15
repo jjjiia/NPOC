@@ -814,7 +814,7 @@ function strategyMenu(map,data){
      
      d3.select("#strategiesMenu")
      .append("div")
-     .attr("id","sviAsterLabel").html("explaination text for the reconfigured SVI")
+     .attr("id","sviAsterLabel").html("CDC considers percentile rank of fifteen different factors while calculating SVI, we consider proportional value of these fifteen factors in each state compared to the state and then take the average of these proportional values for the fifteen different factors.")
      .style("position","absolute").style("left","225px").style("top","85px")
      .style("width","150px")
      .style('padding',"5px")

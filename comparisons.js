@@ -1041,10 +1041,10 @@ function newScatterPlot(state){
     .attr("transform","rotate(-90,"+yLabelX+","+yLabelY+")").attr("text-anchor","middle")
     
     svg.append("text").text("less").attr("x",p*1.8).attr("y",h+p*1.8).attr("text-anchor","start").style("font-style","italic").style("font-weight","bold")
-    svg.append("text").text("more").attr("x",w+p*4).attr("y",h+p*1.8).attr("text-anchor","end").style("font-style","italic").style("font-weight","bold")
+    svg.append("text").text("more").attr("x",w+p*3).attr("y",h+p*1.8).attr("text-anchor","start").style("font-style","italic").style("font-weight","bold")
     
-    svg.append("text").text("less").attr("x",p).attr("y",h+p).attr("text-anchor","start").style("font-style","italic").style("font-weight","bold")
-    svg.append("text").text("more").attr("x",p).attr("y",p+10).attr("text-anchor","start").style("font-style","italic").style("font-weight","bold")
+    svg.append("text").text("less").attr("x",p).attr("y",h+p*1.2).attr("text-anchor","start").style("font-style","italic").style("font-weight","bold")
+    svg.append("text").text("more").attr("x",p).attr("y",p).attr("text-anchor","start").style("font-style","italic").style("font-weight","bold")
     
     svg.append("g")
         .attr("class", "y axis")
