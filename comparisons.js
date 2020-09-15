@@ -83,8 +83,8 @@ var keyColors = {
     Unemployment:"#17DCFF",
     Covid_capita:"#7E6EFF",
     Covid_death_capita:"#E400FF",
-    Medicaid_demand:"red",    
-     Covid:"green"
+    Medicaid_demand:"#00D200",    
+     Covid:"#FF0066"
 }
 
 
