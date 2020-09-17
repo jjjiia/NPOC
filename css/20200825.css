@@ -359,21 +359,17 @@ select{
  .mapMenu{
      padding:0px;
      margin-left:-4px;
-     border-right:1px solid #000;
+     border-left:1px solid #000;
      height:20px;
      width:25%;
      color:#000;
      background-color:#fff;
      display:inline-block;
      text-align:center;
+     padding-top:5px;
+     padding-bottom:5px;
  }
- #aboutButton{
-     border:none;
-     border-left:1px solid black;
- }
- #about{
-     border:none;
- }
+ 
  #geocoder{width:30px;}
  #scatterplotResults{
    position:absolute;
