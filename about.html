@@ -88,22 +88,42 @@ type="text/css"
         text-decoration:underline;
         
       }
+      
       #about{
-          position:absolute;
-          top:80px;
-          width:400px;
-          padding-left:50px;
+          position:relative;
+          top:0px;
+          left:0px;
+          width:100%;
+/*          max-width:700px;
+*/          padding:0;
           padding-top:100px;
-          font-size:16px;
+          font-size:20px;
+          line-height:150%;
+          margin-bottom:40px;
+      }
+      #aboutText{
+        position:absolute;
+        top:100px;
+        left:0px;
+        width:65%;
+        padding:5%;
+        max-width:800px;
+      }
+      #credits{
+          position:relative;
+          top:0px;
+          left:75%;
+          width:15%;
+/*          max-width:700px;
+*/          padding:5%;
+          font-size:20px;
           line-height:150%;
           margin-bottom:40px;
       }
       #FAQ{
-          position:absolute;
-          top:80px;
-          left:35%;
-          width:550px;
-          padding:80px;
+         position:relative;
+          width:90%;
+          padding:5%;
       }
   
       .indented{
@@ -160,13 +180,16 @@ type="text/css"
 </div>
 
 <div id="about">
+  
+  <div id="aboutText">
   <p>  The Covid epidemic in the United States is revealing more than just the effects of a virus. As the New York Times reported in July: “Black and Latino people have been disproportionately affected by the coronavirus in a widespread manner that spans the country, throughout hundreds of counties in urban, suburban and rural areas, and across all age groups.”1 This map links the direct effects of coronavirus disease (Covid) with a wide range of social, economic, and environmental conditions that predated the pandemic and created the conditions for the virus to flourish in this country. It displays the acute vulnerabilities embedded in the American political landscape which are driven by inequality and discrimination shifting over space and time. Repairing the wounds of this pandemic means confronting the policy decisions made long ago that have led us to this moment. 
  </p><p>
     As we try to combat this disease, we have to think more broadly about rebuilding health from the ground up in America, in a New Deal for Public Health with a Community Health Corps2 that goes beyond SARS-CoV-2 testing and tracing, to confront the underlying conditions that have literally made us sick. A new Community Health Corps must be integrated into our communities, provide economic support and social services to start to undo the vulnerabilities that plague us, in order to build towards a better future with a new politics of care. This pandemic is not simply biological. It is a symptom of an illness in our body politic. As SARS-CoV-2 roars across the country it is following the fault lines of social vulnerability in America. Drugs to treat Covid and a vaccine to prevent SARS-CoV-2 infection will only address part of what we need to survive these next few months and years with this virus. We’re going to have to look beyond our traditional notions of health as simply a medical phenomenon, if we’re going to thrive or be ready for the next crisis–whether its climate catastrophe or another microbe–when it comes. 
 </p><p>
-  MAPPING THE NEW POLITICS OF CARE compares seven indexes of vulnerability against Covid data and presents multiple options for how a Community Health Corps might be distributed to states, and to counties within each state. It shows that the specific option you choose to prioritize greatly impacts where care would be sent. We can define the most vulnerable communities—those in greatest need of care—in many ways: we can focus on our current crisis and send CHWs to where the Covid pandemic rages most fiercely3; we can focus on long term measures of social and economic inequality embedded in metrics like the Centers for Disease Control and Prevention’s (CDC) Social Vulnerability Index4; we can focus on the places with too many people dying too young and use the County Health Rankings Years-of-Potential-Life-Lost measure4; we can focus how the pandemic has thrown many into unemployment5 and target our resources in this way; or we can focus on the escalating numbers of people enrolled in Medicaid6 as a result of unemployment7. Each choice results in a different spatial distribution of care. 
+  MAPPING THE NEW POLITICS OF CARE compares four indexes of vulnerability against three measures of Covid data and presents multiple options for how a Community Health Corps might be distributed to states, and to counties within each state. 
   </p>
-    <br><br>
+</div>
+<div id="credits">
      Project Directors:<br><br>
       <div class="names">
       <strong>Gregg Gonsalves</strong>, Assistant Professor, Yale School of Public Health and Co-Director Yale Global Health Justice Partnership<br><br>
@@ -185,7 +208,7 @@ type="text/css"
      GSAPP-CSR, Graduate Research Assistants:<br>
       <strong>Adeline Chum, Nelson De Jesus Ubri</strong>
     </div><br>
-  
+  </div>
 </div>
 
 
@@ -305,7 +328,7 @@ Much of the recent research on the relationship between SVI and Covid should be 
   YPLL for Puerto Rico municipios was calculated using 
   <a href="http://www.salud.gov.pr/Estadisticas-Registros-y-Publicaciones/Estadisticas%20Vitales/Informe%20Anual%20Estad%C3%ADsticas%20Vitales%20Defunciones%202015-2016.pdf" target="_blank">Puerto Rico mortality records for 2015-16 </a>
    in conjunction with the 
-  <a href="https://www.census.gov/data/tables/time-series/demo/popest/2010s-total-puerto-rico-municipios.html" target="_blank">U.S. Census population estimates<a>.
+  <a href="https://www.census.gov/data/tables/time-series/demo/popest/2010s-total-puerto-rico-municipios.html" target="_blank">U.S. Census population estimates</a>.
 </p>
 </div>
 
@@ -333,8 +356,9 @@ Using Medicaid enrollment to allocate CHWs would send the most resources to coun
 <p>
 <i>Data Source for Medicaid Enrollment</i>
  </p><p>
-State-level Medicaid Enrollees: Centers for Medicaid and Medicare Services 6
-County-level Medicaid Enrollee Estimates: U.S. Census Bureau’s 2014-2018 ACS 5-year Estimates18
+<a href="" target="_blank">State-level Medicaid Enrollees: Centers for Medicaid and Medicare Services</a> 6
+
+<a href="" target="_blank">County-level Medicaid Enrollee Estimates: U.S. Census Bureau’s 2014-2018 ACS 5-year Estimates</a>18
 </p>
 </div>
 
@@ -360,7 +384,7 @@ County-level Medicaid Enrollee Estimates: U.S. Census Bureau’s 2014-2018 ACS 5
   <i>Data Source for Unemployment Rate</i>
 </p>
 <p>
-  U.S. Bureau of Labor Statistics - Local Area Unemployment Statistics (LAUS)19
+  <a href="" target="_blank">U.S. Bureau of Labor Statistics - Local Area Unemployment Statistics (LAUS)</a>19
 </p>
 </div>
 
@@ -395,8 +419,8 @@ Covid cases per 100,000, as a relative metric, will shift resources proportional
 
 <i>Data sources for Covid Cases and Covid Cases per 100,000</i>
  </p><p>
-Covid case data: The New York Times’ Coronavirus (Covid-19) Data in the United States21 <br>
-County population data: U.S. Census Bureau’s 2014-2018 ACS 5-year Estimates18
+<a href="" target="_blank">Covid case data: The New York Times’ Coronavirus (Covid-19) Data in the United States</a>21 <br>
+<a href="" target="_blank">County population data: U.S. Census Bureau’s 2014-2018 ACS 5-year Estimates</a>18
  </p>
 </div>
 
@@ -430,8 +454,8 @@ County population data: U.S. Census Bureau’s 2014-2018 ACS 5-year Estimates18
 
   <i>Data sources for Covid Deaths per 100,000</i>
  </p><p>
-  Covid death data: The New York Times’ Coronavirus (Covid-19) Data in the United States21 <br>
-  County population data: U.S. Census Bureau’s 2014-2018 ACS 5-year Estimates18
+  <a href="" target="_blank">Covid death data: The New York Times’ Coronavirus (Covid-19) Data in the United States</a>21 <br>
+  <a href="" target="_blank">County population data: U.S. Census Bureau’s 2014-2018 ACS 5-year Estimates</a>18
  </p>
 </div>
 
